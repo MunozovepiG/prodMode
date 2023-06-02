@@ -39,7 +39,8 @@ dependencies:
   firebase_auth: ^4.1.5
   google_sign_in: ^5.4.2
   cloud_firestore: ^4.1.0
-  astute_components: ^0.0.1
+  astute_components: ^0.0.3
+  google_fonts: ^4.0.4
 
 dev_dependencies:
   flutter_test:
@@ -64,8 +65,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/google-icon.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

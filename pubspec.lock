@@ -13,10 +13,10 @@ packages:
     dependency: "direct main"
     description:
       name: astute_components
-      sha256: "2a3dabfefd694773d90142a320c6198ebb9e9bc3207ae96b162eef09e643f0ce"
+      sha256: a3230cbdeec2117ab8eb833d827ed2ec6882a5182c019c406ca33550df2b0701
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.3"
   async:
     dependency: transitive
     description:
@@ -201,7 +201,7 @@ packages:
     source: sdk
     version: "0.0.0"
   google_fonts:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: google_fonts
       sha256: "6b6f10f0ce3c42f6552d1c70d2c28d764cf22bb487f50f66cca31dcd5194f4d6"

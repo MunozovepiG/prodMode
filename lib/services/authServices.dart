@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:prod_mode/screens/landing.dart';
-import 'package:prod_mode/screens/nameConfirmation.dart';
+import 'package:prod_mode/screens/onboarding/landing.dart';
+import 'package:prod_mode/screens/basicDetails/nameConfirmation.dart';
 
 GoogleSignIn googleSignIn = GoogleSignIn();
 final FirebaseAuth auth = FirebaseAuth.instance;
@@ -40,33 +40,29 @@ void signInWithGoogle(BuildContext context) async {
 
       users.doc(user?.uid).get().then((doc) {
         if (doc.exists) {
-          // existing user
+          // Existing user
           doc.reference.update(userData);
-
-          //the navogation is noe managed by getdocs flow
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => NameConfirmation(),
-            ),
-          );
         } else {
-          // new user
-
+          // New user
           users.doc(user?.uid).set(userData);
-
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => NameConfirmation(),
-            ),
-          );
         }
-      });
-    }
-  } catch (PlatformException) {
-    print(' this is the error $PlatformException.message');
-    error = '$PlatformException.message';
 
-    // better show an alert here
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => NameConfirmation(),
+          ),
+        );
+      });
+    } else {
+      // User cancelled the sign-in process
+      print('Google Sign-In Cancelled');
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) =>
+              LandingScreen())); // Return early to prevent further execution of the function
+    }
+  } catch (e) {
+    print('Error: $e');
+    // Handle the error - you can show an alert or provide feedback to the user
   }
 }
 
