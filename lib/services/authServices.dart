@@ -44,12 +44,11 @@ void signInWithGoogle(BuildContext context) async {
           doc.reference.update(userData);
 
           //the navogation is noe managed by getdocs flow
-
-          // Navigator.of(context).pushReplacement(
-          // MaterialPageRoute(
-          // builder: (context) => NameConfirmation(),
-          //  ),
-          // );
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => NameConfirmation(),
+            ),
+          );
         } else {
           // new user
 

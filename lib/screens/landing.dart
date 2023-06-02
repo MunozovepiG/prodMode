@@ -9,14 +9,21 @@ class LandingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(children: [
-        TextButton(
-            onPressed: () {
-              signInWithGoogle(context);
-            },
-            child: Text('CONTINE')),
-        Text('Hello')
-      ]),
+      body: SafeArea(
+        child: Column(children: [
+          TextButton(
+              onPressed: () {
+                signInWithGoogle(context);
+              },
+              child: Text('CONTINuE')),
+          TextButton(
+              onPressed: () {
+                signOutGoogle(context);
+              },
+              child: Text('sign out')),
+          Text('Hello')
+        ]),
+      ),
     );
   }
 }
