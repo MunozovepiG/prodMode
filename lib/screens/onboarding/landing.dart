@@ -130,7 +130,8 @@ class _LandingScreenState extends State<LandingScreen> {
                               BR10(
                                   'Upon continuing you agree to our terms and conditions.',
                                   AppTheme.colors.black,
-                                  1),
+                                  1,
+                                  TextAlign.center),
                               SS8(),
                               InkWell(
                                 child: PLS10('View our terms and conditions.',
@@ -206,7 +207,8 @@ class _LandingScreenState extends State<LandingScreen> {
                                   child: BB10(
                                       'Made with ❤️ by  kukuracapital.com',
                                       AppTheme.colors.blue500,
-                                      1)),
+                                      1,
+                                      TextAlign.center)),
                             ),
                           )
                         ]),
