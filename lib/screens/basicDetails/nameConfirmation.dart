@@ -2,31 +2,82 @@ import 'package:astute_components/astute_components.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
+import 'package:prod_mode/services/authServices.dart';
 
-class NameConfirmation extends StatelessWidget {
-  const NameConfirmation({super.key});
+class NameConfirmation extends StatefulWidget {
+  @override
+  State<NameConfirmation> createState() => _NameConfirmationState();
+}
+
+class _NameConfirmationState extends State<NameConfirmation> {
+  final userName = auth.currentUser?.displayName.toString();
+  bool trueName = false;
+  TextEditingController nameController = TextEditingController();
+  String updatedName = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            BHCTSh(
-                true,
-                'Make',
-                'secondary text',
-                AppTheme.colors.orange800,
-                AppTheme.colors.orange500,
-                false,
-                false,
-                false,
+            BAHTSh(
+                'https://picsum.photos/seed/picsum/200/300',
                 true,
                 false,
                 false,
+                'Let’s get started',
+                'Can we call you ${userName} ?',
                 false),
-            Text('Very slowly does a hot load ')
+            SS16(),
+            SS8(),
+            //the CTAs
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                MediumMainButton(text: 'Yes', onPressed: () {}),
+                SizedBox(
+                  width: 24,
+                ),
+                MediumMainButton(
+                    text: 'No',
+                    onPressed: () {
+                      setState(() {
+                        trueName = true;
+                        print(trueName);
+                      });
+                    }),
+              ],
+            ),
+
+            //the text editor
+
+            if (trueName)
+              Column(
+                children: [
+                  SS36(),
+                  MyCustomTextField(
+                    controller: nameController,
+                    backgroundColor: AppTheme.colors.blue200,
+                    inputLabelText:
+                        'We want to get to know you better, what is your preferred name?',
+                    hintText: 'Name and Surname',
+                    onChanged: (value) {
+                      setState(() {
+                        updatedName = value;
+                        print(updatedName);
+                      });
+                    },
+                  ),
+                  LS72(),
+                  //the active buttion
+
+                  (updatedName.length > 3)
+                      ? NeonActiveButton('Save', () {})
+                      : DisabledRoundButton('Save', () {})
+                ],
+              )
           ]),
     );
   }
