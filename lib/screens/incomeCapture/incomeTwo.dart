@@ -6,25 +6,38 @@ import 'package:flutter/material.dart';
 import 'package:prod_mode/screens/incomeCapture/incomeFreq.dart';
 import 'package:intl/intl.dart';
 import 'package:prod_mode/screens/incomeCapture/incomeOverview.dart';
+import 'package:prod_mode/screens/incomeCapture/incomeThree.dart';
 
 class IncomeTwo extends StatefulWidget {
   double? userIncomeOne;
   String? incomeFrequency;
 
-  IncomeTwo({this.userIncomeOne, this.incomeFrequency});
+  double? income2;
+  double? income3;
+  double? income4;
+
+  IncomeTwo(
+      {this.userIncomeOne,
+      this.incomeFrequency,
+      this.income2,
+      this.income3,
+      this.income4});
 
   @override
-  State<IncomeTwo> createState() =>
-      _IncomeTwoState(userIncomeOne, incomeFrequency);
+  State<IncomeTwo> createState() => _IncomeTwoState(
+      userIncomeOne, incomeFrequency, income2, income3, income4);
 }
 
 class _IncomeTwoState extends State<IncomeTwo> {
   double? userIncomeOne;
   String? incomeFrequency;
   double? income2;
+  double? income3;
+  double? income4;
   bool? dateSelected = false;
 
-  _IncomeTwoState(this.userIncomeOne, this.incomeFrequency);
+  _IncomeTwoState(this.userIncomeOne, this.incomeFrequency, this.income2,
+      this.income3, this.income4);
   String? incomeInput;
   TextEditingController _incomeController = TextEditingController();
 
@@ -46,6 +59,7 @@ class _IncomeTwoState extends State<IncomeTwo> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      Text('${income2}'),
                       BHCTSh(
                           true,
                           'Make',
@@ -124,22 +138,32 @@ class _IncomeTwoState extends State<IncomeTwo> {
 
                       LS72(),
                       //
-                      (dateSelected! && income2! > 0 && income2! != null)
+                      (dateSelected! && income2 != 0)
                           ? NeonActiveButton('Next', () {
                               //based on the frequency we determine where to redirect them
 
                               //monthly
 
-                              (incomeFrequency == 'Monthly')
+                              (incomeFrequency != 'Weekly')
                                   ? Navigator.of(context)
                                       .push(MaterialPageRoute(
                                           builder: (context) => IncomeOverview(
-                                                userIncomeOne: income2,
+                                                userIncomeOne: userIncomeOne,
+                                                incomeFrequency:
+                                                    incomeFrequency,
+                                                userIncomeTwo: income2,
+                                                userIncomeFour: income4,
+                                                userIncomeThree: income3,
                                               )))
                                   : Navigator.of(context)
                                       .push(MaterialPageRoute(
-                                          builder: (context) => IncomeTwo(
-                                                userIncomeOne: income2,
+                                          builder: (context) => IncomeThree(
+                                                userIncomeOne: userIncomeOne,
+                                                userIncomeTwo: income2,
+                                                incomeFrequency:
+                                                    incomeFrequency,
+                                                income3: income3,
+                                                income4: income4,
                                               )));
 
                               //the rest

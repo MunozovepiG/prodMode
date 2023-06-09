@@ -22,6 +22,9 @@ class _IncomeOneState extends State<IncomeOne> {
 
   String? incomeInput;
   double? income1 = 0;
+  double? income2 = 0;
+  double? income3 = 0;
+  double? income4 = 0;
   _IncomeOneState(this.incomeFrequency);
   DateTime currentDate = DateTime.now();
   DateFormat format = DateFormat('E, MMM dd, yyyy');
@@ -142,6 +145,9 @@ class _IncomeOneState extends State<IncomeOne> {
                                             builder: (context) =>
                                                 IncomeOverview(
                                                   userIncomeOne: income1,
+                                                  userIncomeTwo: income2,
+                                                  userIncomeThree: income3,
+                                                  userIncomeFour: income4,
                                                   incomeFrequency:
                                                       incomeFrequency,
                                                 )))
@@ -149,6 +155,9 @@ class _IncomeOneState extends State<IncomeOne> {
                                         .push(MaterialPageRoute(
                                             builder: (context) => IncomeTwo(
                                                   userIncomeOne: income1,
+                                                  income2: income2,
+                                                  income3: income3,
+                                                  income4: income4,
                                                   incomeFrequency:
                                                       incomeFrequency,
                                                 )));

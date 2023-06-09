@@ -7,21 +7,30 @@ class IncomeFour extends StatefulWidget {
   double? userIncomeOne;
   double? userIncomeTwo;
   double? userIncomeThree;
+  double? income4;
+  String? incomeFrequency;
 
-  IncomeFour({this.userIncomeOne, this.userIncomeTwo, this.userIncomeThree});
+  IncomeFour(
+      {this.userIncomeOne,
+      this.userIncomeTwo,
+      this.userIncomeThree,
+      this.income4,
+      this.incomeFrequency});
 
   @override
-  State<IncomeFour> createState() =>
-      _IncomeFourState(userIncomeOne, userIncomeTwo, userIncomeThree);
+  State<IncomeFour> createState() => _IncomeFourState(
+      userIncomeOne, userIncomeTwo, userIncomeThree, income4, incomeFrequency);
 }
 
 class _IncomeFourState extends State<IncomeFour> {
   double? userIncomeOne;
   double? userIncomeTwo;
   double? userIncomeThree;
+  double? income4;
+  String? incomeFrequency;
 
-  _IncomeFourState(
-      this.userIncomeOne, this.userIncomeTwo, this.userIncomeThree);
+  _IncomeFourState(this.userIncomeOne, this.userIncomeTwo, this.userIncomeThree,
+      this.income4, this.incomeFrequency);
   @override
   Widget build(BuildContext context) {
     return Scaffold(

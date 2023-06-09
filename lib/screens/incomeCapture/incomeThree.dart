@@ -6,18 +6,30 @@ import 'package:flutter/material.dart';
 class IncomeThree extends StatefulWidget {
   double? userIncomeOne;
   double? userIncomeTwo;
+  String? incomeFrequency;
+  double? income3;
+  double? income4;
 
-  IncomeThree({this.userIncomeOne, this.userIncomeTwo});
+  IncomeThree(
+      {this.userIncomeOne,
+      this.userIncomeTwo,
+      this.incomeFrequency,
+      this.income3,
+      this.income4});
 
   @override
-  State<IncomeThree> createState() =>
-      _IncomeThreeState(userIncomeOne, userIncomeTwo);
+  State<IncomeThree> createState() => _IncomeThreeState(
+      userIncomeOne, userIncomeTwo, incomeFrequency, income3, income4);
 }
 
 class _IncomeThreeState extends State<IncomeThree> {
   double? userIncomeOne;
   double? userIncomeTwo;
-  _IncomeThreeState(this.userIncomeOne, this.userIncomeTwo);
+  String? incomeFrequency;
+  double? income3;
+  double? income4;
+  _IncomeThreeState(this.userIncomeOne, this.userIncomeTwo,
+      this.incomeFrequency, this.income3, this.income4);
 
   @override
   Widget build(BuildContext context) {

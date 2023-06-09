@@ -53,7 +53,11 @@ class _IncomeOverviewState extends State<IncomeOverview> {
                     children: [
                       CBButton(),
                       Text('the overview total income'),
-                      Text('${incomeFrequency}')
+                      Text('${incomeFrequency}'),
+                      Text('${userIncomeOne}'),
+                      Text('${userIncomeTwo}'),
+                      Text('${userIncomeThree}'),
+                      Text('${userIncomeFour}')
                     ]),
               ),
             ),
