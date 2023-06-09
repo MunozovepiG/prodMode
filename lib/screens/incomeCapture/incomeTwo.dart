@@ -174,11 +174,18 @@ class _IncomeTwoState extends State<IncomeTwo> {
                                             builder: (context) =>
                                                 IncomeOverview(
                                                   userIncomeOne: userIncomeOne,
+                                                  userIncomeTwo: income2,
                                                   incomeFrequency:
                                                       incomeFrequency,
-                                                  userIncomeTwo: income2,
-                                                  userIncomeFour: income4,
+                                                  selectedDateOne:
+                                                      selectedDateOne,
+                                                  selectedDateTwo: selectedDate,
+                                                  formattedFrequencyOne:
+                                                      formattedFrequencyOne,
+                                                  formattedFrequencyTwo:
+                                                      formattedDate,
                                                   userIncomeThree: income3,
+                                                  userIncomeFour: income4,
                                                 )))
                                     : Navigator.of(context)
                                         .push(MaterialPageRoute(

@@ -200,11 +200,12 @@ class _IncomeThreeState extends State<IncomeThree> {
                                                       incomeFrequency,
                                                   selectedDateOne:
                                                       selectedDateOne,
-                                                  selectedDateTwo: selectedDate,
+                                                  selectedDateTwo:
+                                                      selectedDateTwo,
                                                   formattedFrequencyOne:
                                                       formattedFrequencyOne,
                                                   formattedFrequencyTwo:
-                                                      formattedDate,
+                                                      formattedFrequencyTwo,
                                                   formattedFrequencyThree:
                                                       formattedDate,
                                                   selectedDateThree:

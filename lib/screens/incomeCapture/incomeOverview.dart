@@ -112,6 +112,8 @@ class _IncomeOverviewState extends State<IncomeOverview> {
     } else if (incomeFrequency == "Monthly") {
       totalIncome = userIncomeOne;
     }
+
+    String? formattedIncome = totalIncome!.toStringAsFixed(2);
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width * 1.0,
@@ -221,8 +223,8 @@ class _IncomeOverviewState extends State<IncomeOverview> {
                                   BBRS12("Total income:", AppTheme.colors.black,
                                       1, TextAlign.left),
 
-                                  BBLM14(
-                                      '$totalIncome', AppTheme.colors.black, 1)
+                                  BBLM14('$formattedIncome',
+                                      AppTheme.colors.black, 1)
                                 ],
                               ),
 
@@ -230,6 +232,9 @@ class _IncomeOverviewState extends State<IncomeOverview> {
 
                               NeonActiveButton("Save", () {
                                 // saving to firebase collection
+                                addIncomeDetails();
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => SavingsLanding()));
                               }),
                               SS8(),
                               BasicPlainTextButton(
@@ -289,8 +294,8 @@ class _IncomeOverviewState extends State<IncomeOverview> {
                                   BBRS12("Total income:", AppTheme.colors.black,
                                       1, TextAlign.left),
 
-                                  BBLM14(
-                                      '$totalIncome', AppTheme.colors.black, 1)
+                                  BBLM14('$formattedIncome',
+                                      AppTheme.colors.black, 1)
                                 ],
                               ),
 
@@ -298,6 +303,9 @@ class _IncomeOverviewState extends State<IncomeOverview> {
 
                               NeonActiveButton("Save", () {
                                 // saving to firebase collection
+                                addIncomeDetails();
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => SavingsLanding()));
                               }),
                               SS8(),
                               BasicPlainTextButton(
@@ -342,8 +350,8 @@ class _IncomeOverviewState extends State<IncomeOverview> {
                                   BBRS12("Total income:", AppTheme.colors.black,
                                       1, TextAlign.left),
 
-                                  BBLM14(
-                                      '$totalIncome', AppTheme.colors.black, 1)
+                                  BBLM14('$formattedIncome',
+                                      AppTheme.colors.black, 1)
                                 ],
                               ),
                               LS72(),

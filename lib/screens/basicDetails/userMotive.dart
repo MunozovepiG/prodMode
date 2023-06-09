@@ -67,23 +67,25 @@ class _UserMotiveState extends State<UserMotive> {
 
                           SS36(),
                           RadioButtons(
-                              options: [
-                                'Stop living paycheck to paycheck',
-                                'Achieve financial freedom',
-                                'Build generational wealth',
-                                'Prepare and plan for retirement',
-                                'Retire early',
-                                'Improve money management skills',
-                                'Improve wealth management skills.'
-                              ],
-                              buttonColor: AppTheme.colors.blue500,
-                              onChanged: (value) {
-                                setState(() {
-                                  userMotive = value;
-                                });
-                              },
-                              labelText:
-                                  'Please select your current financial goal.'),
+                            options: [
+                              'Stop living paycheck to paycheck',
+                              'Achieve financial freedom',
+                              'Build generational wealth',
+                              'Prepare and plan for retirement',
+                              'Retire early',
+                              'Improve money management skills',
+                              'Improve wealth management skills.'
+                            ],
+                            buttonColor: AppTheme.colors.blue500,
+                            onChanged: (value) {
+                              setState(() {
+                                userMotive = value;
+                              });
+                            },
+                            labelText:
+                                'Please select your current financial goal.',
+                            disabledIndex: 20,
+                          ),
 
                           // the CTA
                           SS36(),
