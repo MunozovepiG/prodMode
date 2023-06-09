@@ -25,6 +25,7 @@ class _IncomeOneState extends State<IncomeOne> {
   double? income2 = 0;
   double? income3 = 0;
   double? income4 = 0;
+
   _IncomeOneState(this.incomeFrequency);
   DateTime currentDate = DateTime.now();
   DateFormat format = DateFormat('E, MMM dd, yyyy');
@@ -97,6 +98,8 @@ class _IncomeOneState extends State<IncomeOne> {
                               onDateSelected: (value) {
                                 setState(() {
                                   dateSelected = true;
+                                  formattedDate = value;
+                                  selectedDate = format.parse(formattedDate!);
                                   print(dateSelected);
                                 });
                               },
@@ -112,7 +115,7 @@ class _IncomeOneState extends State<IncomeOne> {
                         // the input field
                         MS24(),
                         MyCustomTextField(
-                          inputLabelText: 'Please provide your email',
+                          inputLabelText: 'Please provide your income',
                           controller: _incomeController,
                           backgroundColor: AppTheme.colors.lavendar350,
                           hintText: 'income',
@@ -150,6 +153,9 @@ class _IncomeOneState extends State<IncomeOne> {
                                                   userIncomeFour: income4,
                                                   incomeFrequency:
                                                       incomeFrequency,
+                                                  formattedFrequencyOne:
+                                                      formattedDate,
+                                                  selectedDateOne: selectedDate,
                                                 )))
                                     : Navigator.of(context)
                                         .push(MaterialPageRoute(
@@ -160,6 +166,9 @@ class _IncomeOneState extends State<IncomeOne> {
                                                   income4: income4,
                                                   incomeFrequency:
                                                       incomeFrequency,
+                                                  formattedFrequencyOne:
+                                                      formattedDate,
+                                                  selectedDateOne: selectedDate,
                                                 )));
 
                                 //the rest
