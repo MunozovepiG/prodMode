@@ -40,64 +40,66 @@ class _UserMotiveState extends State<UserMotive> {
               SafeArea(
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        //the heading
+                  child: SingleChildScrollView(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          //the heading
 
-                        BAHTSh(
-                            imageURl,
-                            true,
-                            false,
-                            false,
-                            'How can we help best?',
-                            'Always on the same page.',
-                            true),
+                          BAHTSh(
+                              imageURl,
+                              true,
+                              false,
+                              false,
+                              'How can we help best?',
+                              'Always on the same page.',
+                              true),
 
-                        //the description
+                          //the description
 
-                        MS24(),
-                        BBRM14(
-                            'To ensure your success, we value understanding your ultimate financial goal, as it allows us to tailor our services to your specific needs.',
-                            AppTheme.colors.black,
-                            6,
-                            TextAlign.center),
+                          MS24(),
+                          BBRM14(
+                              'To ensure your success, we value understanding your ultimate financial goal, as it allows us to tailor our services to your specific needs.',
+                              AppTheme.colors.black,
+                              6,
+                              TextAlign.center),
 
-                        SS36(),
-                        RadioButtons(
-                            options: [
-                              'Stop living paycheck to paycheck',
-                              'Achieve financial freedom',
-                              'Build generational wealth',
-                              'Prepare and plan for retirement',
-                              'Retire early',
-                              'Improve money management skills',
-                              'Improve wealth management skills.'
-                            ],
-                            buttonColor: AppTheme.colors.blue500,
-                            onChanged: (value) {
-                              setState(() {
-                                userMotive = value;
-                              });
-                            },
-                            labelText:
-                                'Please select your current financial goal.'),
+                          SS36(),
+                          RadioButtons(
+                              options: [
+                                'Stop living paycheck to paycheck',
+                                'Achieve financial freedom',
+                                'Build generational wealth',
+                                'Prepare and plan for retirement',
+                                'Retire early',
+                                'Improve money management skills',
+                                'Improve wealth management skills.'
+                              ],
+                              buttonColor: AppTheme.colors.blue500,
+                              onChanged: (value) {
+                                setState(() {
+                                  userMotive = value;
+                                });
+                              },
+                              labelText:
+                                  'Please select your current financial goal.'),
 
-                        // the CTA
-                        SS36(),
-                        (userMotive == null)
-                            ? DisabledRoundButton('Next', () {})
-                            : NeonActiveButton('Next', () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => StepOComp(
-                                          userDoB: userDoB,
-                                          correctName: correctName,
-                                          userLocation: userLocation,
-                                          userMotive: userMotive,
-                                        )));
-                              })
-                      ]),
+                          // the CTA
+                          SS36(),
+                          (userMotive == null)
+                              ? DisabledRoundButton('Next', () {})
+                              : NeonActiveButton('Next', () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => StepOComp(
+                                            userDoB: userDoB,
+                                            correctName: correctName,
+                                            userLocation: userLocation,
+                                            userMotive: userMotive,
+                                          )));
+                                })
+                        ]),
+                  ),
                 ),
               ),
             ],

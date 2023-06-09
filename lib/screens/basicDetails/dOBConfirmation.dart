@@ -33,76 +33,88 @@ class _DOBConfirmationState extends State<DOBConfirmation> {
         width: MediaQuery.of(context).size.width * 1.0,
         height: MediaQuery.of(context).size.height * 1.0,
         color: AppTheme.colors.background,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SafeArea(
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // the heading
-                      BAHTSh(imageURl, true, false, false, 'Hi ${correctName}',
-                          'It is great to be on a first name basis.', true),
-                      MS24(),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SafeArea(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: SingleChildScrollView(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // the heading
+                          BAHTSh(
+                              imageURl,
+                              true,
+                              false,
+                              false,
+                              'Hi ${correctName}',
+                              'It is great to be on a first name basis.',
+                              true),
+                          MS24(),
 
-//description
-                      BBRM14(
-                          'We value your relationship with us and want to make sure we keep you informed and up-to-date on the things that matter most to you - from reaching your financial goals to celebrating your birthday.',
-                          AppTheme.colors.black,
-                          6,
-                          TextAlign.center),
+                          //description
+                          BBRM14(
+                              'We value your relationship with us and want to make sure we keep you informed and up-to-date on the things that matter most to you - from reaching your financial goals to celebrating your birthday.',
+                              AppTheme.colors.black,
+                              6,
+                              TextAlign.center),
 
-                      MS24(),
+                          MS24(),
 
-                      //the calendar CTA
+                          //the calendar CTA
 
-                      SH12('What day is your birthday?', AppTheme.colors.black,
-                          1),
+                          SH12('What day is your birthday?',
+                              AppTheme.colors.black, 1),
 
-                      SS16(),
+                          SS16(),
 
-                      CustomDatePicker(
-                          intialDate: currentDate
-                              .subtract(const Duration(days: 14 * 365)),
-                          maxDate: currentDate
-                              .subtract(const Duration(days: 14 * 365)),
-                          minDate: currentDate
-                              .subtract(const Duration(days: 90 * 365)),
-                          primaryColor: AppTheme.colors.blue500,
-                          onDateSelected: (date) {
-                            setState(() {
-                              selectedDate = date;
-                              print(date);
+                          CustomDatePicker(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              intialDate: currentDate
+                                  .subtract(const Duration(days: 14 * 365)),
+                              maxDate: currentDate
+                                  .subtract(const Duration(days: 14 * 365)),
+                              minDate: currentDate
+                                  .subtract(const Duration(days: 90 * 365)),
+                              primaryColor: AppTheme.colors.blue500,
+                              onDateSelected: (date) {
+                                setState(() {
+                                  selectedDate = date;
+                                  print(date);
 
-                              convertedDate = format.parse(selectedDate!);
-                              print(convertedDate);
-                            });
-                          },
-                          colorscheme: ColorScheme.light(
-                              primary: AppTheme.colors.blue500),
-                          iconColor: AppTheme.colors.blue500,
-                          labelText: 'Please selct a date'),
+                                  convertedDate = format.parse(selectedDate!);
+                                  print(convertedDate);
+                                });
+                              },
+                              colorscheme: ColorScheme.light(
+                                  primary: AppTheme.colors.blue500),
+                              iconColor: AppTheme.colors.blue500,
+                              labelText: 'Please selct a date'),
 
-                      LS72(),
-                      //the next button
+                          LS72(),
+                          //the next button
 
-                      selectedDate!.isNotEmpty
-                          ? NeonActiveButton('Next', () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => LocationConfirmation(
-                                        correctName,
-                                        selectedDate,
-                                      )));
-                            })
-                          : DisabledRoundButton('Next', () {})
-                    ]),
+                          selectedDate!.isNotEmpty
+                              ? NeonActiveButton('Next', () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          LocationConfirmation(
+                                            correctName,
+                                            selectedDate,
+                                          )));
+                                })
+                              : DisabledRoundButton('Next', () {})
+                        ]),
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

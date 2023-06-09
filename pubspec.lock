@@ -13,10 +13,10 @@ packages:
     dependency: "direct main"
     description:
       name: astute_components
-      sha256: "4b45ffcbc318b8617f07440c9d25cd0be3467f40b29827ebced8be3a94351302"
+      sha256: "665f27964b45c9cd89e9e6c07312342d88be29ccebb6f16ebbb551bcfc5e8c55"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.10"
+    version: "0.0.19"
   async:
     dependency: transitive
     description:

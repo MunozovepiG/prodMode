@@ -45,81 +45,83 @@ class _LocationConfirmationState extends State<LocationConfirmation> {
               SafeArea(
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        //the heading
+                  child: SingleChildScrollView(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          //the heading
 
-                        BAHTSh(
-                            imageURl,
-                            true,
-                            false,
-                            false,
-                            'Where are you at?',
-                            'Let’s leverage your location.',
-                            true),
+                          BAHTSh(
+                              imageURl,
+                              true,
+                              false,
+                              false,
+                              'Where are you at?',
+                              'Let’s leverage your location.',
+                              true),
 
-                        MS24(),
+                          MS24(),
 
-                        //description
-                        BBRM14(
-                            'We want to help you take advantage of all the financial opportunities available in your country to achieve your financial goals.',
-                            AppTheme.colors.black,
-                            6,
-                            TextAlign.center),
+                          //description
+                          BBRM14(
+                              'We want to help you take advantage of all the financial opportunities available in your country to achieve your financial goals.',
+                              AppTheme.colors.black,
+                              6,
+                              TextAlign.center),
 
-                        SS36(),
-                        //conditional statement : when none of the above
+                          SS36(),
+                          //conditional statement : when none of the above
 
-                        if (userLocation == "None of the above")
-                          Column(
-                            children: [
-                              BR10(
-                                  '🌍 Do not worry, we are expanding and will soon be available in your country!',
-                                  AppTheme.colors.black,
-                                  6,
-                                  TextAlign.left),
-                              SS8(),
+                          if (userLocation == "None of the above")
+                            Column(
+                              children: [
+                                BR10(
+                                    '🌍 Do not worry, we are expanding and will soon be available in your country!',
+                                    AppTheme.colors.black,
+                                    6,
+                                    TextAlign.left),
+                                SS8(),
+                              ],
+                            ),
+
+                          // the dropdown
+
+                          MyDropdown(
+                            labelText: 'Please select your location:',
+                            iconColor: AppTheme.colors.blue500,
+                            borderColor: AppTheme.colors.blue500,
+                            values: [
+                              'Please select an option',
+                              'United States of America',
+                              'South Africa',
+                              'None of the above'
                             ],
+                            preselectedValue: 'Please select an option',
+                            onChanged: (value) {
+                              print('Selected value: $value');
+                              setState(() {
+                                userLocation = value;
+                              });
+                            },
                           ),
+                          //
 
-                        // the dropdown
-
-                        MyDropdown(
-                          labelText: 'Please select your location:',
-                          iconColor: AppTheme.colors.blue500,
-                          borderColor: AppTheme.colors.blue500,
-                          values: [
-                            'Please select an option',
-                            'United States of America',
-                            'South Africa',
-                            'None of the above'
-                          ],
-                          preselectedValue: 'Please select an option',
-                          onChanged: (value) {
-                            print('Selected value: $value');
-                            setState(() {
-                              userLocation = value;
-                            });
-                          },
-                        ),
-                        //
-
-                        // the CTA
-                        LS72(),
-                        (userLocation == 'Please select an option' ||
-                                userLocation == null)
-                            ? DisabledRoundButton('Next', () {})
-                            : NeonActiveButton('Next', () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => UserMotive(
-                                          correctName: correctName,
-                                          userDoB: userDoB,
-                                          userLocation: userLocation,
-                                        )));
-                              })
-                      ]),
+                          // the CTA
+                          LS72(),
+                          (userLocation == 'Please select an option' ||
+                                  userLocation == null)
+                              ? DisabledRoundButton('Next', () {})
+                              : NeonActiveButton('Next', () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => UserMotive(
+                                            correctName: correctName,
+                                            userDoB: userDoB,
+                                            userLocation: userLocation,
+                                          )));
+                                })
+                        ]),
+                  ),
                 ),
               ),
             ],
