@@ -119,13 +119,13 @@ class _IncomeOverviewState extends State<IncomeOverview> {
         width: MediaQuery.of(context).size.width * 1.0,
         height: MediaQuery.of(context).size.height * 1.0,
         color: AppTheme.colors.background,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SafeArea(
-                child: Container(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -147,7 +147,7 @@ class _IncomeOverviewState extends State<IncomeOverview> {
                             'Here is your total income'),
                         MS24(),
                         MS24(),
-// monthly
+                        // monthly
                         if (incomeFrequency == "Weekly")
                           Column(
                             children: [
@@ -249,7 +249,7 @@ class _IncomeOverviewState extends State<IncomeOverview> {
                                   textColor: AppTheme.colors.green800)
                             ],
                           ),
-//the bi-weekly option
+                        //the bi-weekly option
                         if (incomeFrequency == "Bi-weekly")
                           Column(
                             children: [
@@ -320,7 +320,7 @@ class _IncomeOverviewState extends State<IncomeOverview> {
                                   textColor: AppTheme.colors.green800)
                             ],
                           ),
-//the monthly option
+                        //the monthly option
                         if (incomeFrequency == "Monthly")
                           Column(
                             children: [
@@ -376,8 +376,8 @@ class _IncomeOverviewState extends State<IncomeOverview> {
                           ),
                       ]),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -406,6 +406,7 @@ class _IncomeOverviewState extends State<IncomeOverview> {
       'userIncomeFour': userIncomeFour,
       'formattedFrequencyFour': formattedFrequencyFour,
       'selectedDateFour': selectedDateFour,
+      'totalIncome': totalIncome,
     };
 
     ref.add(data);

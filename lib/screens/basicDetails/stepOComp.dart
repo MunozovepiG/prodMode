@@ -38,56 +38,54 @@ class _StepOCompState extends State<StepOComp> {
         width: MediaQuery.of(context).size.width * 1.0,
         height: MediaQuery.of(context).size.height * 1.0,
         color: AppTheme.colors.background,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SafeArea(
-                child: Container(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  child: SingleChildScrollView(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          //the heading
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        //the heading
 
-                          BAHTSh(imageURl, false, true, false, 'It is simple',
-                              'On to the next step', true),
+                        BAHTSh(imageURl, false, true, false, 'It is simple',
+                            'On to the next step', true),
 
-                          MS24(),
-                          //the description
-                          BBRM14(
-                              'In a few simple steps we will have all information needed to transform start working towards your financial goals.',
-                              AppTheme.colors.black,
-                              6,
-                              TextAlign.center),
+                        MS24(),
+                        //the description
+                        BBRM14(
+                            'In a few simple steps we will have all information needed to transform start working towards your financial goals.',
+                            AppTheme.colors.black,
+                            6,
+                            TextAlign.center),
 
-                          SS8(),
+                        SS8(),
 
-                          //the description
-                          BBRM14(
-                              'Although you can make changes in the future if needed, please provide the most precise and up-to-date data possible.',
-                              AppTheme.colors.black,
-                              6,
-                              TextAlign.center),
+                        //the description
+                        BBRM14(
+                            'Although you can make changes in the future if needed, please provide the most precise and up-to-date data possible.',
+                            AppTheme.colors.black,
+                            6,
+                            TextAlign.center),
 
-                          LS72(),
+                        LS72(),
 
-                          NeonActiveButton('Continue', () {
-                            //save onto the firebase database
-                            addConfirmedProfile();
-                            // navigation to next screen
+                        NeonActiveButton('Continue', () {
+                          //save onto the firebase database
+                          addConfirmedProfile();
+                          // navigation to next screen
 
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => IncomeFrequency()));
-                          })
-                        ]),
-                  ),
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => IncomeFrequency()));
+                        })
+                      ]),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
