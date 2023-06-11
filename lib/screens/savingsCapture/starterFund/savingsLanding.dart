@@ -17,6 +17,7 @@ class _SavingsLandingState extends State<SavingsLanding> {
   double? totalIncome;
   double? calculatedMonths;
   int? months;
+  DateTime? endDate;
   //userLocation extraction
   CollectionReference userDetails = FirebaseFirestore.instance
       .collection('users')
@@ -155,13 +156,18 @@ class _SavingsLandingState extends State<SavingsLanding> {
 //need to calculate the potential endDate
                                 if (userLocation == 'South Africa') {
                                   calculatedMonths =
-                                      (20000 / totalIncome! * 0.1)
+                                      (20000 / (totalIncome! * 0.1))
                                           .ceilToDouble();
                                   months = calculatedMonths!.round();
+                                  endDate = DateTime.now()
+                                      .add(Duration(days: 30 * months!));
                                 } else {
-                                  calculatedMonths = (1000 / totalIncome! * 0.1)
-                                      .ceilToDouble();
+                                  calculatedMonths =
+                                      (1000 / (totalIncome! * 0.1))
+                                          .ceilToDouble();
                                   months = calculatedMonths!.round();
+                                  endDate = DateTime.now()
+                                      .add(Duration(days: 30 * months!));
                                 }
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => StarterFundDetails(
@@ -169,6 +175,7 @@ class _SavingsLandingState extends State<SavingsLanding> {
                                           totalIncome: totalIncome,
                                           savingStatus: savingStatus,
                                           months: months,
+                                          endDate: endDate,
                                         )));
                               })
                             : DisabledRoundButton('Next', () {})

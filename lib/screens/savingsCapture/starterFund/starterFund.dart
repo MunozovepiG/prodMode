@@ -16,16 +16,18 @@ class StarterFundDetails extends StatefulWidget {
   double? totalIncome;
   String? savingStatus;
   int? months;
+  DateTime? endDate;
 
   StarterFundDetails(
       {required this.userLocation,
       this.totalIncome,
       this.savingStatus,
-      this.months});
+      this.months,
+      this.endDate});
 
   @override
-  State<StarterFundDetails> createState() =>
-      _StarterFundDetailsState(userLocation, totalIncome, savingStatus, months);
+  State<StarterFundDetails> createState() => _StarterFundDetailsState(
+      userLocation, totalIncome, savingStatus, months, endDate);
 }
 
 class _StarterFundDetailsState extends State<StarterFundDetails> {
@@ -33,6 +35,7 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
   double? totalIncome;
   String? userLocation;
   int? months;
+  DateTime? endDate;
   DateTime? startDate = DateTime.now();
   DateFormat formatter = DateFormat('E, dd, MM, yyyy');
   final DateTime currentDate = DateTime.now();
@@ -42,14 +45,13 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
   String? endDateText = 'Recommended end date';
   String? savingStatus;
 
-  _StarterFundDetailsState(
-      this.userLocation, this.totalIncome, this.savingStatus, this.months);
+  _StarterFundDetailsState(this.userLocation, this.totalIncome,
+      this.savingStatus, this.months, this.endDate);
 
   @override
   Widget build(BuildContext context) {
     String? selectedStartDate;
     bool test = false;
-    DateTime? endDate = DateTime.now().add(Duration(days: 90 * months!));
 
     String formatedCurrentDate = formatter.format(DateTime.now());
     // Duration duration = endDate.difference(currentDate);
@@ -201,7 +203,7 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
                                   text: '${formatter.format(endDate!)}',
                                   textColor: AppTheme.colors.black,
                                   onPressed: () {
-                                    // _endShowDatePicker(endDate);
+                                    _endShowDatePicker();
                                   }),
                             ],
                           ),
@@ -216,7 +218,15 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
                 SS36(),
                 NeonActiveButton('Next', () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => StarterFundOverview()));
+                      builder: (context) => StarterFundOverview(
+                            userLocation: userLocation,
+                            savingStatus: savingStatus,
+                            totalIncome: totalIncome,
+                            startDate: startDate,
+                            endDate: endDate,
+                            saveCat: 'Starter fund',
+                            months: months,
+                          )));
                 })
               ],
             ),
@@ -244,7 +254,7 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
   }
 
   // the end datePicker
-  Future<void> _endShowDatePicker(endDate) async {
+  Future<void> _endShowDatePicker() async {
     DateTime lastDay = currentDate.add(
       Duration(days: months! * 30),
     );
