@@ -21,11 +21,20 @@ class _DebtDetailsState extends State<DebtDetails> {
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _debtAmountController = TextEditingController();
   String? debtCat = 'Personal loan';
-  double? debtAmount;
+  double? debtAmount = 0;
   String? debtAmountInput = '0';
   String? debtDescription;
+  bool? biWeekly = false;
+  String firstPaymentText = '';
+  String secondPaymentText = '';
+  DateFormat formatter = DateFormat('E, MMM dd, yyyy');
+  DateTime? secondPaymentDate;
+  DateTime? firstPaymentDate;
+  DateTime? endDate;
+  String? endDateText = 'dd/mm/yyyy';
 
   _DebtDetailsState(this.debtStatus, this.debtCount);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,11 +136,143 @@ class _DebtDetailsState extends State<DebtDetails> {
                       });
                     },
                   ),
+                  MS24(),
+                  //checkbox
+
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ILM12('Please tick if you repay this loan bi-weekly:',
+                          AppTheme.colors.grey800, 1),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Checkbox(
+                              value: biWeekly,
+                              activeColor: AppTheme.colors.orange500,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  biWeekly = value;
+                                });
+                              }),
+                          Text('Repayment is done bi-weekly'),
+                        ],
+                      ),
+
+                      MS24(),
+
+                      //the payments options
+
+                      (biWeekly!)
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //payment one
+                                MonthlyCalendar(
+                                    primaryColor: AppTheme.colors.orange500,
+                                    onDateSelected: (value) {
+                                      firstPaymentText = value;
+                                      firstPaymentDate =
+                                          formatter.parse(firstPaymentText);
+                                    },
+                                    colorscheme: ColorScheme.light(
+                                        primary: AppTheme.colors.orange500),
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    iconColor: AppTheme.colors.orange500,
+                                    labelText:
+                                        'Please select your first repayment date'),
+
+                                MS24(),
+                                MonthlyCalendar(
+                                    primaryColor: AppTheme.colors.orange500,
+                                    onDateSelected: (value) {
+                                      secondPaymentText = value;
+                                      print(secondPaymentText);
+                                      secondPaymentDate =
+                                          formatter.parse(secondPaymentText);
+                                    },
+                                    colorscheme: ColorScheme.light(
+                                        primary: AppTheme.colors.orange500),
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    iconColor: AppTheme.colors.orange500,
+                                    labelText:
+                                        'Please select your second repayment date')
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                MonthlyCalendar(
+                                    primaryColor: AppTheme.colors.orange500,
+                                    onDateSelected: (value) {
+                                      setState(() {
+                                        firstPaymentText = value;
+                                        firstPaymentDate =
+                                            formatter.parse(firstPaymentText);
+
+                                        print(value);
+                                      });
+                                    },
+                                    colorscheme: ColorScheme.light(
+                                        primary: AppTheme.colors.orange500),
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    iconColor: AppTheme.colors.orange500,
+                                    labelText:
+                                        'Please select your repayment date'),
+                              ],
+                            ),
+                    ],
+                  ),
+
+                  //end payment date
+                  MS24(),
+                  Row(
+                    children: [
+                      //bespoke calendar given the calculations that need to be completed
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ILM12('Please select the due date',
+                              AppTheme.colors.grey650, 1),
+                          IconTextButton(
+                              icon: Icons.calendar_month_outlined,
+                              color: AppTheme.colors.orange500,
+                              text: '${endDateText}',
+                              textColor: AppTheme.colors.black,
+                              onPressed: () {
+                                setState(() {
+                                  _endDatePicker();
+                                });
+                              }),
+                        ],
+                      ),
+                    ],
+                  ),
 
                   SS36(),
-                  (debtAmount! > 0 && debtDescription != null)
-                      ? NeonActiveButton('Next', () {})
-                      : DisabledRoundButton('Next', () {})
+
+                  (biWeekly!)
+                      ? Column(
+                          children: [
+                            (debtAmount! > 0 &&
+                                    firstPaymentText != '' &&
+                                    secondPaymentText != '' &&
+                                    endDateText != '')
+                                ? Text('valid')
+                                : Text('invalid')
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            (debtAmount! > 0 &&
+                                    firstPaymentText != '' &&
+                                    endDateText != '')
+                                ? Text('valid')
+                                : Text('invalid')
+                          ],
+                        )
                 ]),
               )
             ],
@@ -139,5 +280,24 @@ class _DebtDetailsState extends State<DebtDetails> {
         )),
       ),
     );
+  }
+
+  // the end datePicker
+  Future<void> _endDatePicker() async {
+    DateTime? currentDate = DateTime.now();
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      //this needs to be calculated
+      initialDate: currentDate,
+      firstDate: currentDate,
+      lastDate: currentDate.add(Duration(days: 365 * 30)),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        endDate = pickedDate;
+        endDateText = formatter.format(endDate!);
+      });
+    }
   }
 }
