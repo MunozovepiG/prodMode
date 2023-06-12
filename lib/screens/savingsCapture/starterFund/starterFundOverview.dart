@@ -119,7 +119,6 @@ class _StarterFundOverviewState extends State<StarterFundOverview> {
                     color: AppTheme.colors.orange500,
                     height: 20,
                     thickness: 1,
-                    indent: 10,
                   ),
 
                   MS24(),

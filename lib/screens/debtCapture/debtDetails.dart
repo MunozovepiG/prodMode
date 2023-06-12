@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:prod_mode/screens/debtCapture/debtConfirmed.dart';
 
 class DebtDetails extends StatefulWidget {
   String? debtStatus;
@@ -32,6 +33,10 @@ class _DebtDetailsState extends State<DebtDetails> {
   DateTime? firstPaymentDate;
   DateTime? endDate;
   String? endDateText = 'dd/mm/yyyy';
+  Duration? duration;
+  double? durationDouble;
+  double? months;
+  double? installment;
 
   _DebtDetailsState(this.debtStatus, this.debtCount);
 
@@ -188,7 +193,7 @@ class _DebtDetailsState extends State<DebtDetails> {
                                     primaryColor: AppTheme.colors.orange500,
                                     onDateSelected: (value) {
                                       secondPaymentText = value;
-                                      print(secondPaymentText);
+                                      // print(secondPaymentText);
                                       secondPaymentDate =
                                           formatter.parse(secondPaymentText);
                                     },
@@ -260,8 +265,40 @@ class _DebtDetailsState extends State<DebtDetails> {
                                     firstPaymentText != '' &&
                                     secondPaymentText != '' &&
                                     endDateText != '')
-                                ? Text('valid')
-                                : Text('invalid')
+                                ? NeonActiveButton("Next", () {
+                                    duration =
+                                        endDate!.difference(firstPaymentDate!);
+                                    durationDouble =
+                                        duration!.inDays.toDouble();
+                                    months = durationDouble! / 30;
+                                    installment = debtAmount! / months!;
+
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DebtDetailsConfirmation(
+                                                  debtStatus: debtStatus,
+                                                  debtCount: debtCount,
+                                                  debtCat: debtCat,
+                                                  debtDescription:
+                                                      debtDescription,
+                                                  debtAmount: debtAmount,
+                                                  biWeekly: biWeekly,
+                                                  firstPaymentText:
+                                                      firstPaymentText,
+                                                  firstPaymentDate:
+                                                      firstPaymentDate,
+                                                  secondPaymentDate:
+                                                      secondPaymentDate,
+                                                  secondPaymentText:
+                                                      secondPaymentText,
+                                                  endDate: endDate,
+                                                  endDateText: endDateText,
+                                                  months: months,
+                                                  installment: installment,
+                                                )));
+                                  })
+                                : DisabledRoundButton("Next", () {})
                           ],
                         )
                       : Column(
@@ -269,8 +306,40 @@ class _DebtDetailsState extends State<DebtDetails> {
                             (debtAmount! > 0 &&
                                     firstPaymentText != '' &&
                                     endDateText != '')
-                                ? Text('valid')
-                                : Text('invalid')
+                                ? NeonActiveButton('Next', () {
+                                    duration =
+                                        endDate!.difference(firstPaymentDate!);
+                                    durationDouble =
+                                        duration!.inDays.toDouble();
+                                    months = durationDouble! / 30;
+                                    installment = debtAmount! / months!;
+
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DebtDetailsConfirmation(
+                                                  debtStatus: debtStatus,
+                                                  debtCount: debtCount,
+                                                  debtCat: debtCat,
+                                                  debtDescription:
+                                                      debtDescription,
+                                                  debtAmount: debtAmount,
+                                                  biWeekly: biWeekly,
+                                                  firstPaymentText:
+                                                      firstPaymentText,
+                                                  firstPaymentDate:
+                                                      firstPaymentDate,
+                                                  secondPaymentDate:
+                                                      secondPaymentDate,
+                                                  secondPaymentText:
+                                                      secondPaymentText,
+                                                  endDate: endDate,
+                                                  endDateText: endDateText,
+                                                  months: months,
+                                                  installment: installment,
+                                                )));
+                                  })
+                                : DisabledRoundButton("Next", () {})
                           ],
                         )
                 ]),
