@@ -248,6 +248,7 @@ class _DebtDetailsState extends State<DebtDetails> {
                               textColor: AppTheme.colors.black,
                               onPressed: () {
                                 setState(() {
+                                  //need to change the color
                                   _endDatePicker();
                                 });
                               }),
@@ -352,14 +353,27 @@ class _DebtDetailsState extends State<DebtDetails> {
   }
 
   // the end datePicker
+
   Future<void> _endDatePicker() async {
     DateTime? currentDate = DateTime.now();
+
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      //this needs to be calculated
       initialDate: currentDate,
       firstDate: currentDate,
       lastDate: currentDate.add(Duration(days: 365 * 30)),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light().copyWith(
+              primary: AppTheme
+                  .colors.orange500, // Set the primary color of the calendar
+              onPrimary: Colors.white, // Set the text color on the calendar
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedDate != null) {

@@ -1,9 +1,10 @@
-import 'dart:html';
-
 import 'package:astute_components/astute_components.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
+import 'package:prod_mode/screens/debtCapture/debtOverview.dart';
 
 class DebtDetailsConfirmation extends StatefulWidget {
   String? debtStatus;
@@ -20,6 +21,7 @@ class DebtDetailsConfirmation extends StatefulWidget {
   DateTime? endDate;
   double? installment;
   double? months;
+  Duration? duration;
 
   DebtDetailsConfirmation(
       {this.debtStatus, //this is deduced by the number of debts saved
@@ -35,7 +37,8 @@ class DebtDetailsConfirmation extends StatefulWidget {
       this.secondPaymentDate,
       this.endDate,
       this.installment,
-      this.months});
+      this.months,
+      this.duration});
 
   @override
   State<DebtDetailsConfirmation> createState() => _DebtDetailsConfirmationState(
@@ -52,7 +55,8 @@ class DebtDetailsConfirmation extends StatefulWidget {
       secondPaymentDate,
       endDate,
       installment,
-      months);
+      months,
+      duration);
 }
 
 class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
@@ -69,27 +73,30 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
   DateTime? secondPaymentDate;
   DateTime? endDate;
   double? installment;
+
   double? months;
 
+  Duration? duration;
   _DebtDetailsConfirmationState(
-    this.debtStatus,
-    this.debtCount,
-    this.debtCat,
-    this.debtDescription,
-    this.debtAmount,
-    this.biWeekly,
-    this.firstPaymentText,
-    this.secondPaymentText,
-    this.endDateText,
-    this.firstPaymentDate,
-    this.secondPaymentDate,
-    this.endDate,
-    this.installment,
-    this.months,
-  );
+      this.debtStatus,
+      this.debtCount,
+      this.debtCat,
+      this.debtDescription,
+      this.debtAmount,
+      this.biWeekly,
+      this.firstPaymentText,
+      this.secondPaymentText,
+      this.endDateText,
+      this.firstPaymentDate,
+      this.secondPaymentDate,
+      this.endDate,
+      this.installment,
+      this.months,
+      this.duration);
 
   @override
   Widget build(BuildContext context) {
+    String? formattedInstallment = installment!.toStringAsPrecision(5);
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width * 1.0,
@@ -145,8 +152,13 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
                               AppTheme.colors.orange500, 1, TextAlign.start),
                           SS16(),
                           // TwoItemLabel - description
-                          TwoItemLabel('Monthly contributions:',
-                              AppTheme.colors.grey650, '$debtDescription'),
+                          (debtDescription != null)
+                              ? TwoItemLabel('Monthly contributions:',
+                                  AppTheme.colors.grey650, '$debtDescription')
+                              : TwoItemLabel(
+                                  'Monthly contributions:',
+                                  AppTheme.colors.grey650,
+                                  'No description provided'),
 
                           SS16(),
                           // TwoItemLabel - installment
@@ -155,16 +167,37 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
                                   ? 'Bi-weekly installments:'
                                   : 'Monthly installments',
                               AppTheme.colors.grey650,
-                              '$installment'),
+                              '$formattedInstallment'),
 
                           SS16(),
                           // TwoItemLabel - amount owed
                           TwoItemLabel('Amount owed:', AppTheme.colors.grey650,
                               '$debtAmount'),
+                          SS16(),
+                          // the end date
+                          TwoItemLabel('End date:', AppTheme.colors.grey650,
+                              '$endDateText'),
                         ],
                       ),
                     ],
-                  )
+                  ),
+
+                  // the buttons
+                  MS24(),
+                  NeonActiveButton('Save', () {
+                    addDebtDetails(formattedInstallment);
+                    // Navigation to the overview
+
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => DebtOverview()));
+                  }),
+                  BasicPlainTextButton(
+                      color: AppTheme.colors.green800,
+                      text: 'Edit',
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      textColor: AppTheme.colors.green800)
                 ]),
               ),
             ],
@@ -172,5 +205,31 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
         )),
       ),
     );
+  }
+
+  void addDebtDetails(formattedInstallment) {
+    CollectionReference ref = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection('userDebtDetails');
+
+    var data = {
+      'debtCat': debtCat,
+      'debtAmount': debtAmount,
+      'installment': installment,
+      'formattedInstallment': formattedInstallment,
+      'endDate': endDate,
+      'endDate Text': endDateText,
+      'biWeekly staus': biWeekly,
+      'first PaymentDate': firstPaymentDate,
+      'first PaymentText': firstPaymentText,
+      'secondPaymentDate': secondPaymentDate,
+      'secondPaymentText': secondPaymentText,
+      'duration': duration,
+      'debtDescription': debtDescription,
+      'debtCount': debtCount
+    };
+
+    ref.add(data);
   }
 }
