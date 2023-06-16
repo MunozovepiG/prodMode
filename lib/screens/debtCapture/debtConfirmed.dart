@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:prod_mode/screens/debtCapture/debtOverview.dart';
+import 'package:prod_mode/screens/debtCapture/debtOverviewTest.dart';
 
 class DebtDetailsConfirmation extends StatefulWidget {
   String? debtStatus;
@@ -141,7 +142,7 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
                     height: 20,
                     thickness: 1,
                   ),
-                  MS24(),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -185,11 +186,8 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
                   // the buttons
                   MS24(),
                   NeonActiveButton('Save', () {
-                    addDebtDetails(formattedInstallment);
-                    // Navigation to the overview
-
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => DebtOverview()));
+                        builder: (context) => OverviewReviewed()));
                   }),
                   BasicPlainTextButton(
                       color: AppTheme.colors.green800,

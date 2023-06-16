@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:prod_mode/internalComponents.dart';
+import 'package:prod_mode/screens/debtCapture/debtDetails.dart';
 
 class DebtOverview extends StatefulWidget {
   @override
@@ -19,22 +21,28 @@ class _DebtOverviewState extends State<DebtOverview> {
   double? totalDebts;
   String? formattedTotalDebts;
 
+  //call the data  @override
+  void initState() {
+    super.initState();
+    // fetchData();
+  }
+
   //the varriables for the totals
 
-  double? totalCreditCards;
-  String? totalCreditCardtext;
-  double? totalStudentLoans;
-  String? totalStudentLoantext;
-  double? totalPersonalLoans;
-  String? totalPersonalLoanstext;
-  double? totalcreditFacility;
-  String? totalcreditFacilitytext;
-  double? totalCarLoans;
-  String? totalCarloanstext;
-  double? totalOther;
-  String? totalOthertext;
-  double? totalMortgage;
-  String? totalMortgagetext;
+  double? totalCreditCards = 0;
+  String? totalCreditCardtext = '';
+  double? totalStudentLoans = 0;
+  String? totalStudentLoantext = '';
+  double? totalPersonalLoans = 0;
+  String? totalPersonalLoanstext = '';
+  double? totalcreditFacility = 0;
+  String? totalcreditFacilitytext = '';
+  double? totalCarLoans = 0;
+  String? totalCarloanstext = '';
+  double? totalOther = 0;
+  String? totalOthertext = '';
+  double? totalMortgage = 0;
+  String? totalMortgagetext = '';
 
   @override
   Widget build(BuildContext context) {
@@ -114,12 +122,12 @@ class _DebtOverviewState extends State<DebtOverview> {
                           //the total amounts:
 //credit cards
                           if (creditCardTotal.isNotEmpty) {
-                            totalCreditCards = carLoanTotal.sum;
+                            totalCreditCards = creditCardTotal.sum;
                             totalCarloanstext =
                                 totalCreditCards!.toStringAsFixed(2);
                           } else {
                             totalCreditCards = 0;
-                            totalCarloanstext =
+                            totalCreditCardtext =
                                 totalCreditCards!.toStringAsFixed(2);
                           }
 
@@ -188,12 +196,97 @@ class _DebtOverviewState extends State<DebtOverview> {
                             totalMortgage = 0;
                             totalMortgagetext = totalOther!.toStringAsFixed(2);
                           }
-                        }
+                        } else {}
 
                         return Column(
                           children: [
-                            CBButton(),
-                            Text('$totalPersonalLoanstext'),
+                            //the header
+                            BHCTSh(
+                                true,
+                                'Keep',
+                                'Debt-free is the way to be',
+                                AppTheme.colors.orange500,
+                                AppTheme.colors.orange500,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                true,
+                                'We will be keeping track'),
+
+                            // description
+
+                            MS24(),
+
+                            BBRM14(
+                                "We'll monitor your debts and send you notifications when your upcoming payments are due.",
+                                AppTheme.colors.black,
+                                6,
+                                TextAlign.center),
+
+                            SS16(),
+
+                            //Totol monthly installment
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                BBLM14('Total monthly debt repayments',
+                                    AppTheme.colors.black, 1),
+                                BBLM14('$formattedTotalDebts',
+                                    AppTheme.colors.black, 1),
+                              ],
+                            ),
+                            SS16(),
+                            Row(
+                              children: [
+                                BBRS12(
+                                    'Here is a breakdown of you monthly debt payments:',
+                                    AppTheme.colors.black,
+                                    1,
+                                    TextAlign.left),
+                              ],
+                            ),
+                            SS16(),
+//
+                            RowLabel('Total Credit Card debt',
+                                '$totalCreditCardtext'),
+                            SS8(),
+                            RowLabel('Total personal loan debt',
+                                '$totalPersonalLoanstext'),
+
+                            SS8(),
+                            RowLabel('Total mortgage  house loans',
+                                '$totalMortgagetext'),
+
+                            SS8(),
+                            RowLabel(
+                                'Total car loan debt', '$totalCarloanstext'),
+
+                            SS8(),
+                            RowLabel(
+                                'Total other loans debt', '$totalOthertext'),
+
+                            MS24(),
+
+                            Divider(
+                              color: AppTheme.colors.grey800,
+                              height: 20,
+                              thickness: 1,
+                            ),
+
+                            //SS8(),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                SmallView(Icons.add, 'add new', () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => DebtDetails()));
+                                }),
+                              ],
+                            ),
 
                             // the cards
                             Container(
@@ -211,39 +304,113 @@ class _DebtOverviewState extends State<DebtOverview> {
 
                                     return Column(children: [
                                       Container(
-                                        height: 250,
+                                        height: 800,
                                         child: ListView.builder(
+                                          shrinkWrap: true,
                                           itemCount: snapshot.data?.docs.length,
                                           itemBuilder: (((context, index) {
                                             Map? data = snapshot
                                                 .data?.docs[index]
                                                 .data() as Map?;
 
-                                            return Container(
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                      '${data?['debtAmount']}'),
-                                                  TextButton(
-                                                      onPressed: () async {
-                                                        await snapshot
-                                                            .data
-                                                            ?.docs[index]
-                                                            .reference
-                                                            .delete();
+                                            String? formattedInstallment =
+                                                data?['installment']
+                                                    .toStringAsFixed(2);
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 24.0),
+                                              child: Container(
+                                                height: 175,
+                                                decoration: BoxDecoration(
+                                                    color: Color(0xffbFF9958),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8)),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 16.0,
+                                                          bottom: 16,
+                                                          left: 18,
+                                                          right: 18),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          BBRM14(
+                                                              '${formattedInstallment} total monthly installment',
+                                                              Colors.white,
+                                                              1,
+                                                              TextAlign.left),
 
-                                                        Navigator.of(context)
-                                                            .push(MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        DebtOverview()))
-                                                            .then((value) =>
-                                                                setState(
-                                                                  () {},
-                                                                ));
-                                                      },
-                                                      child: Text('Delete'))
-                                                ],
+                                                          //the delete button
+                                                          IconButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                await snapshot
+                                                                    .data
+                                                                    ?.docs[
+                                                                        index]
+                                                                    .reference
+                                                                    .delete();
+
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .push(MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                DebtOverview()))
+                                                                    .then((value) =>
+                                                                        setState(
+                                                                          () {},
+                                                                        ));
+                                                              },
+                                                              icon: Icon(
+                                                                Icons.delete,
+                                                                color: Colors
+                                                                    .white,
+                                                                size: 18,
+                                                              )),
+                                                        ],
+                                                      ),
+
+                                                      //debtCat
+                                                      BBLM14(
+                                                          '${data?['debtCat']}',
+                                                          Colors.white,
+                                                          1),
+                                                      SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      //debt description
+                                                      BBRM14(
+                                                          '${data?['debtDescription']}',
+                                                          Colors.white,
+                                                          1,
+                                                          TextAlign.left),
+                                                      SS8(),
+                                                      //next duration
+                                                      BBRM14(
+                                                          '${data?['debtCat']}',
+                                                          Colors.white,
+                                                          1,
+                                                          TextAlign.left),
+
+                                                      //the outsatanding amount
+                                                      BBRM14(
+                                                          '${data?['debtCat']}',
+                                                          Colors.white,
+                                                          1,
+                                                          TextAlign.left),
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
                                             );
                                           })),
