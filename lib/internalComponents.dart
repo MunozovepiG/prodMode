@@ -23,3 +23,21 @@ class RowLabel extends StatelessWidget {
     );
   }
 }
+
+class TwoColumnLabel extends StatelessWidget {
+  String description;
+  String content;
+
+  TwoColumnLabel(this.description, this.content);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        BBRS12(description, AppTheme.colors.black, 1, TextAlign.center),
+        SS8(),
+        BBLM14(content, AppTheme.colors.black, 1)
+      ],
+    );
+  }
+}

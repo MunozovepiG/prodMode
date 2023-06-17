@@ -22,6 +22,7 @@ class DebtDetailsConfirmation extends StatefulWidget {
   double? installment;
   double? months;
   Duration? duration;
+  String? name;
 
   DebtDetailsConfirmation(
       {this.debtStatus, //this is deduced by the number of debts saved
@@ -38,7 +39,8 @@ class DebtDetailsConfirmation extends StatefulWidget {
       this.endDate,
       this.installment,
       this.months,
-      this.duration});
+      this.duration,
+      this.name});
 
   @override
   State<DebtDetailsConfirmation> createState() => _DebtDetailsConfirmationState(
@@ -56,7 +58,8 @@ class DebtDetailsConfirmation extends StatefulWidget {
       endDate,
       installment,
       months,
-      duration);
+      duration,
+      name);
 }
 
 class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
@@ -75,6 +78,7 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
   double? installment;
 
   double? months;
+  String? name;
 
   Duration? duration;
   _DebtDetailsConfirmationState(
@@ -92,7 +96,8 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
       this.endDate,
       this.installment,
       this.months,
-      this.duration);
+      this.duration,
+      this.name);
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +194,9 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
                       formattedInstallment,
                     );
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => DebtOverview()));
+                        builder: (context) => DebtOverview(
+                              name: name,
+                            )));
                   }),
                   BasicPlainTextButton(
                       color: AppTheme.colors.green800,

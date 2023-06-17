@@ -18,6 +18,7 @@ class _SavingsLandingState extends State<SavingsLanding> {
   double? calculatedMonths;
   int? months;
   DateTime? endDate;
+
   //userLocation extraction
   CollectionReference userDetails = FirebaseFirestore.instance
       .collection('users')
@@ -28,29 +29,6 @@ class _SavingsLandingState extends State<SavingsLanding> {
       .collection('users')
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('userIncomeDetails');
-
-  Future<void> getUserDetails() async {
-    try {
-      QuerySnapshot querySnapshot = await userDetails.get();
-      if (querySnapshot.size > 0) {
-        // Assuming you want to read the value from the first document
-        DocumentSnapshot documentSnapshot = querySnapshot.docs[0];
-
-        // Access the desired field value
-        dynamic fieldValue = documentSnapshot.get('userLocation');
-
-        // Do something with the value
-        print('Field Value: $fieldValue');
-        setState(() {
-          userLocation = fieldValue;
-        });
-      } else {
-        print('No documents found in the collection');
-      }
-    } catch (error) {
-      print('Error reading user details: $error');
-    }
-  }
 
 // the income extraction
   Future<void> getIncomeDetails() async {
@@ -77,11 +55,35 @@ class _SavingsLandingState extends State<SavingsLanding> {
     }
   }
 
+  Future<void> getUserDetails() async {
+    try {
+      QuerySnapshot querySnapshot = await userDetails.get();
+      if (querySnapshot.size > 0) {
+        // Assuming you want to read the value from the first document
+        DocumentSnapshot documentSnapshot = querySnapshot.docs[0];
+
+        // Access the desired field value
+        dynamic fieldValue = documentSnapshot.get('userLocation');
+
+        // Do something with the value
+        print('Field Value: $fieldValue');
+        setState(() {
+          userLocation = fieldValue;
+        });
+      } else {
+        print('No documents found in the collection');
+      }
+    } catch (error) {
+      print('Error reading user details: $error');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     getUserDetails();
-    getIncomeDetails(); // an extraction of the user's location
+    getIncomeDetails();
+// an extraction of the user's location
   }
 
   Widget build(BuildContext context) {

@@ -9,7 +9,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:prod_mode/screens/savingsCapture/starterFund/starterFundOverview.dart';
+import 'package:prod_mode/screens/savingsCapture/starterFund/starterFundConfirm.dart';
 
 class StarterFundDetails extends StatefulWidget {
   String? userLocation;

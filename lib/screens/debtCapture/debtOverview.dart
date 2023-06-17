@@ -5,11 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:prod_mode/internalComponents.dart';
 import 'package:prod_mode/screens/debtCapture/debtDetails.dart';
+import 'package:prod_mode/screens/debtCapture/test.dart';
 import 'dart:math';
 
+import 'package:prod_mode/screens/priorityAssessment/planStartFundNoDebt.dart';
+import 'package:prod_mode/screens/priorityAssessment/startFundDebts.dart';
+
 class DebtOverview extends StatefulWidget {
+  String? name;
+
+  DebtOverview({this.name});
   @override
-  State<DebtOverview> createState() => _DebtOverviewState();
+  State<DebtOverview> createState() => _DebtOverviewState(name);
 }
 
 class _DebtOverviewState extends State<DebtOverview> {
@@ -19,13 +26,45 @@ class _DebtOverviewState extends State<DebtOverview> {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('userDebtDetails');
 
-  double? totalDebts;
+  // extraction of total income -> needed to understand the debt percentage
+  CollectionReference userIncome = FirebaseFirestore.instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('userIncomeDetails');
+
+  double? totalDebtInstallment;
   String? formattedTotalDebts;
+  double? totalIncome;
+
+  // the income extraction
+  Future<void> getIncomeDetails() async {
+    try {
+      QuerySnapshot querySnapshot = await userIncome.get();
+      if (querySnapshot.size > 0) {
+        // Assuming you want to read the value from the first document
+        DocumentSnapshot documentSnapshot = querySnapshot.docs[0];
+
+        // Access the desired field value
+        dynamic income = documentSnapshot.get('totalIncome');
+
+        // Do something with the value
+
+        setState(() {
+          totalIncome = income;
+          print('total $totalIncome');
+        });
+      } else {
+        print('No documents found in the collection');
+      }
+    } catch (error) {
+      print('Error reading user details: $error');
+    }
+  }
 
   //call the data  @override
   void initState() {
     super.initState();
-    // fetchData();
+    getIncomeDetails();
   }
 
   //the varriables for the totals
@@ -44,6 +83,9 @@ class _DebtOverviewState extends State<DebtOverview> {
   String? totalOthertext = '';
   double? totalMortgage = 0;
   String? totalMortgagetext = '';
+
+  String? name;
+  _DebtOverviewState(this.name);
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +130,9 @@ class _DebtOverviewState extends State<DebtOverview> {
                           for (int i = 0; i < debts.length; i++) {
                             debtTotal.add(debts[i]['installment']);
 
-                            totalDebts = debtTotal.sum;
+                            totalDebtInstallment = debtTotal.sum;
                             formattedTotalDebts =
-                                (totalDebts!).toStringAsFixed(2);
+                                (totalDebtInstallment!).toStringAsFixed(2);
 
                             if (debts[i]['debtCat'] == 'Credit card') {
                               creditCardTotal.add(debts[i]['installment']);
@@ -108,7 +150,7 @@ class _DebtOverviewState extends State<DebtOverview> {
                               mortgageTotal.add(debts[i]['installment']);
                             }
 
-                            if (debts[i]['debtCat'] == 'Car Loan') {
+                            if (debts[i]['debtCat'] == 'Car loan') {
                               carLoanTotal.add(debts[i]['installment']);
                             }
                             if (debts[i]['debtCat'] == 'Credit facility') {
@@ -203,7 +245,7 @@ class _DebtOverviewState extends State<DebtOverview> {
                           children: [
                             //the header
                             BHCTSh(
-                                true,
+                                false,
                                 'Keep',
                                 'Debt-free is the way to be',
                                 AppTheme.colors.orange500,
@@ -252,11 +294,16 @@ class _DebtOverviewState extends State<DebtOverview> {
                             SS16(),
 //
 
-                            RowLabel('Total credit facility debt',
-                                '$totalcreditFacilitytext'),
-                            SS8(),
                             RowLabel('Total credit card debt',
                                 '$totalCreditCardtext'),
+
+                            SS8(),
+                            RowLabel('Total student loan debt',
+                                '$totalStudentLoantext'),
+                            SS8(),
+
+                            RowLabel('Total credit facility debt',
+                                '$totalcreditFacilitytext'),
                             SS8(),
                             RowLabel('Total personal loan debt',
                                 '$totalPersonalLoanstext'),
@@ -334,85 +381,104 @@ class _DebtOverviewState extends State<DebtOverview> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             8)),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 16.0,
-                                                          bottom: 16,
-                                                          left: 18,
-                                                          right: 18),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          BBRM14(
-                                                              '${formattedInstallment} total monthly installment',
-                                                              Colors.white,
-                                                              1,
-                                                              TextAlign.left),
+                                                child: InkWell(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 16.0,
+                                                            bottom: 16,
+                                                            left: 18,
+                                                            right: 18),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            BBRM14(
+                                                                '${formattedInstallment} total monthly installment',
+                                                                Colors.white,
+                                                                1,
+                                                                TextAlign.left),
 
-                                                          //the delete button
-                                                          IconButton(
-                                                              onPressed:
-                                                                  () async {
-                                                                await snapshot
-                                                                    .data
-                                                                    ?.docs[
-                                                                        index]
-                                                                    .reference
-                                                                    .delete();
+                                                            //the delete button
+                                                            IconButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  await snapshot
+                                                                      .data
+                                                                      ?.docs[
+                                                                          index]
+                                                                      .reference
+                                                                      .delete();
 
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .push(MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) =>
-                                                                                DebtOverview()))
-                                                                    .then((value) =>
-                                                                        setState(
-                                                                          () {},
-                                                                        ));
-                                                              },
-                                                              icon: Icon(
-                                                                Icons
-                                                                    .delete_outline,
-                                                                color: Colors
-                                                                    .white,
-                                                                size: 18,
-                                                              )),
-                                                        ],
-                                                      ),
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .push(MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              DebtOverview()))
+                                                                      .then((value) =>
+                                                                          setState(
+                                                                            () {},
+                                                                          ));
+                                                                },
+                                                                icon: Icon(
+                                                                  Icons
+                                                                      .delete_outline,
+                                                                  color: Colors
+                                                                      .white,
+                                                                  size: 18,
+                                                                )),
+                                                          ],
+                                                        ),
 
-                                                      //debtCat
-                                                      BBLM14(
-                                                          '${data?['debtCat']}',
-                                                          Colors.white,
-                                                          1),
-                                                      SizedBox(
-                                                        height: 8,
-                                                      ),
-                                                      //debt description
-                                                      BBRM14(
-                                                          '${data?['debtDescription']}',
-                                                          Colors.white,
-                                                          1,
-                                                          TextAlign.left),
-                                                      SS8(),
+                                                        //debtCat
+                                                        BBLM14(
+                                                            '${data?['debtCat']}',
+                                                            Colors.white,
+                                                            1),
+                                                        SizedBox(
+                                                          height: 8,
+                                                        ),
+                                                        //debt description
+                                                        BBRM14(
+                                                            '${data?['debtDescription']}',
+                                                            Colors.white,
+                                                            1,
+                                                            TextAlign.left),
+                                                        SS8(),
 
-                                                      //the outsatanding amount and the months
-                                                      BBRM14(
-                                                          '${data?['debtAmount']} in ${monthsRounded} months',
-                                                          Colors.white,
-                                                          1,
-                                                          TextAlign.left),
-                                                    ],
+                                                        //the outsatanding amount and the months
+                                                        BBRM14(
+                                                            '${data?['debtAmount']} in ${monthsRounded} months',
+                                                            Colors.white,
+                                                            1,
+                                                            TextAlign.left),
+                                                      ],
+                                                    ),
                                                   ),
+                                                  onTap: () {
+                                                    Navigator.of(context)
+                                                        .push(MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    DebtTest(
+                                                                      debtDetails:
+                                                                          data,
+                                                                      documentID: snapshot
+                                                                          .data
+                                                                          ?.docs[
+                                                                              index]
+                                                                          .id,
+                                                                    )))
+                                                        .then((value) {
+                                                      setState(() {});
+                                                    });
+                                                  },
                                                 ),
                                               ),
                                             );
@@ -422,7 +488,17 @@ class _DebtOverviewState extends State<DebtOverview> {
 
                                       //the next button
                                       SS8(),
-                                      NeonActiveButton('Next', () {})
+                                      NeonActiveButton('Continue', () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PriorityAsEFDebts(
+                                                      totalDebtInstallment:
+                                                          totalDebtInstallment,
+                                                      totalIncome: totalIncome,
+                                                      name: name,
+                                                    )));
+                                      })
                                     ]);
                                   }),
                             )

@@ -188,6 +188,7 @@ class _StarterFundOverviewState extends State<StarterFundOverview> {
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .collection('userSaveDetails');
+    DateFormat formatter = DateFormat('E, dd, MM, yyyy');
 
     var data = {
       'startDate': startDate,
@@ -195,7 +196,10 @@ class _StarterFundOverviewState extends State<StarterFundOverview> {
       'saveCat': saveCat,
       'months': months,
       'savingStatus': savingStatus,
-      'targetAmount': targetAmount
+      'targetAmount': targetAmount,
+      'formattedEndDate': formatter.format(endDate!),
+      'formattedStartDate': formatter.format(startDate!),
+      // this system to be developed 'goalStatus': ,
     };
 
     ref.add(data);

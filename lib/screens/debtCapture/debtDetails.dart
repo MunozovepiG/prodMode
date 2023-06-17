@@ -9,11 +9,13 @@ import 'package:prod_mode/screens/debtCapture/debtConfirmed.dart';
 class DebtDetails extends StatefulWidget {
   String? debtStatus;
   int? debtCount;
+  String? name;
 
-  DebtDetails({this.debtStatus, this.debtCount});
+  DebtDetails({this.debtStatus, this.debtCount, this.name});
 
   @override
-  State<DebtDetails> createState() => _DebtDetailsState(debtStatus, debtCount);
+  State<DebtDetails> createState() =>
+      _DebtDetailsState(debtStatus, debtCount, name);
 }
 
 class _DebtDetailsState extends State<DebtDetails> {
@@ -37,8 +39,9 @@ class _DebtDetailsState extends State<DebtDetails> {
   double? durationDouble;
   double? months;
   double? installment;
+  String? name;
 
-  _DebtDetailsState(this.debtStatus, this.debtCount);
+  _DebtDetailsState(this.debtStatus, this.debtCount, this.name);
 
   @override
   Widget build(BuildContext context) {
@@ -297,6 +300,7 @@ class _DebtDetailsState extends State<DebtDetails> {
                                                   endDateText: endDateText,
                                                   months: months,
                                                   installment: installment,
+                                                  name: name,
                                                 )));
                                   })
                                 : DisabledRoundButton("Next", () {})
