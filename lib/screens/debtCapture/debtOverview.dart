@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:prod_mode/internalComponents.dart';
 import 'package:prod_mode/screens/debtCapture/debtDetails.dart';
+import 'dart:math';
 
 class DebtOverview extends StatefulWidget {
   @override
@@ -250,7 +251,11 @@ class _DebtOverviewState extends State<DebtOverview> {
                             ),
                             SS16(),
 //
-                            RowLabel('Total Credit Card debt',
+
+                            RowLabel('Total credit facility debt',
+                                '$totalcreditFacilitytext'),
+                            SS8(),
+                            RowLabel('Total credit card debt',
                                 '$totalCreditCardtext'),
                             SS8(),
                             RowLabel('Total personal loan debt',
@@ -304,7 +309,7 @@ class _DebtOverviewState extends State<DebtOverview> {
 
                                     return Column(children: [
                                       Container(
-                                        height: 800,
+                                        height: 400,
                                         child: ListView.builder(
                                           shrinkWrap: true,
                                           itemCount: snapshot.data?.docs.length,
@@ -316,6 +321,9 @@ class _DebtOverviewState extends State<DebtOverview> {
                                             String? formattedInstallment =
                                                 data?['installment']
                                                     .toStringAsFixed(2);
+                                            int? monthsRounded =
+                                                data?['months'].ceil();
+
                                             return Padding(
                                               padding: const EdgeInsets.only(
                                                   bottom: 24.0),
@@ -372,7 +380,8 @@ class _DebtOverviewState extends State<DebtOverview> {
                                                                         ));
                                                               },
                                                               icon: Icon(
-                                                                Icons.delete,
+                                                                Icons
+                                                                    .delete_outline,
                                                                 color: Colors
                                                                     .white,
                                                                 size: 18,
@@ -395,16 +404,10 @@ class _DebtOverviewState extends State<DebtOverview> {
                                                           1,
                                                           TextAlign.left),
                                                       SS8(),
-                                                      //next duration
-                                                      BBRM14(
-                                                          '${data?['debtCat']}',
-                                                          Colors.white,
-                                                          1,
-                                                          TextAlign.left),
 
-                                                      //the outsatanding amount
+                                                      //the outsatanding amount and the months
                                                       BBRM14(
-                                                          '${data?['debtCat']}',
+                                                          '${data?['debtAmount']} in ${monthsRounded} months',
                                                           Colors.white,
                                                           1,
                                                           TextAlign.left),
@@ -415,7 +418,11 @@ class _DebtOverviewState extends State<DebtOverview> {
                                             );
                                           })),
                                         ),
-                                      )
+                                      ),
+
+                                      //the next button
+                                      SS8(),
+                                      NeonActiveButton('Next', () {})
                                     ]);
                                   }),
                             )
