@@ -342,6 +342,7 @@ class _DebtDetailsState extends State<DebtDetails> {
                                                   endDateText: endDateText,
                                                   months: months,
                                                   installment: installment,
+                                                  name: name,
                                                 )));
                                   })
                                 : DisabledRoundButton("Next", () {})

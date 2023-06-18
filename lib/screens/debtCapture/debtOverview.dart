@@ -8,15 +8,16 @@ import 'package:prod_mode/screens/debtCapture/debtDetails.dart';
 import 'package:prod_mode/screens/debtCapture/test.dart';
 import 'dart:math';
 
-import 'package:prod_mode/screens/priorityAssessment/planStartFundNoDebt.dart';
+import 'package:prod_mode/screens/priorityAssessment/planSF.dart';
 import 'package:prod_mode/screens/priorityAssessment/startFundDebts.dart';
 
 class DebtOverview extends StatefulWidget {
   String? name;
 
-  DebtOverview({this.name});
+  String? example;
+  DebtOverview({this.name, this.example});
   @override
-  State<DebtOverview> createState() => _DebtOverviewState(name);
+  State<DebtOverview> createState() => _DebtOverviewState(name, example);
 }
 
 class _DebtOverviewState extends State<DebtOverview> {
@@ -35,6 +36,7 @@ class _DebtOverviewState extends State<DebtOverview> {
   double? totalDebtInstallment;
   String? formattedTotalDebts;
   double? totalIncome;
+  String? example;
 
   // the income extraction
   Future<void> getIncomeDetails() async {
@@ -85,7 +87,7 @@ class _DebtOverviewState extends State<DebtOverview> {
   String? totalMortgagetext = '';
 
   String? name;
-  _DebtOverviewState(this.name);
+  _DebtOverviewState(this.name, this.example);
 
   @override
   Widget build(BuildContext context) {
@@ -381,104 +383,85 @@ class _DebtOverviewState extends State<DebtOverview> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             8)),
-                                                child: InkWell(
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 16.0,
-                                                            bottom: 16,
-                                                            left: 18,
-                                                            right: 18),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            BBRM14(
-                                                                '${formattedInstallment} total monthly installment',
-                                                                Colors.white,
-                                                                1,
-                                                                TextAlign.left),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 16.0,
+                                                          bottom: 16,
+                                                          left: 18,
+                                                          right: 18),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          BBRM14(
+                                                              '${formattedInstallment} total monthly installment',
+                                                              Colors.white,
+                                                              1,
+                                                              TextAlign.left),
 
-                                                            //the delete button
-                                                            IconButton(
-                                                                onPressed:
-                                                                    () async {
-                                                                  await snapshot
-                                                                      .data
-                                                                      ?.docs[
-                                                                          index]
-                                                                      .reference
-                                                                      .delete();
+                                                          //the delete button
+                                                          IconButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                await snapshot
+                                                                    .data
+                                                                    ?.docs[
+                                                                        index]
+                                                                    .reference
+                                                                    .delete();
 
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .push(MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              DebtOverview()))
-                                                                      .then((value) =>
-                                                                          setState(
-                                                                            () {},
-                                                                          ));
-                                                                },
-                                                                icon: Icon(
-                                                                  Icons
-                                                                      .delete_outline,
-                                                                  color: Colors
-                                                                      .white,
-                                                                  size: 18,
-                                                                )),
-                                                          ],
-                                                        ),
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .push(MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                DebtOverview()))
+                                                                    .then((value) =>
+                                                                        setState(
+                                                                          () {},
+                                                                        ));
+                                                              },
+                                                              icon: Icon(
+                                                                Icons
+                                                                    .delete_outline,
+                                                                color: Colors
+                                                                    .white,
+                                                                size: 18,
+                                                              )),
+                                                        ],
+                                                      ),
 
-                                                        //debtCat
-                                                        BBLM14(
-                                                            '${data?['debtCat']}',
-                                                            Colors.white,
-                                                            1),
-                                                        SizedBox(
-                                                          height: 8,
-                                                        ),
-                                                        //debt description
-                                                        BBRM14(
-                                                            '${data?['debtDescription']}',
-                                                            Colors.white,
-                                                            1,
-                                                            TextAlign.left),
-                                                        SS8(),
+                                                      //debtCat
+                                                      BBLM14(
+                                                          '${data?['debtCat']}',
+                                                          Colors.white,
+                                                          1),
+                                                      SizedBox(
+                                                        height: 8,
+                                                      ),
+                                                      //debt description
+                                                      BBRM14(
+                                                          '${data?['debtDescription']}',
+                                                          Colors.white,
+                                                          1,
+                                                          TextAlign.left),
+                                                      SS8(),
 
-                                                        //the outsatanding amount and the months
-                                                        BBRM14(
-                                                            '${data?['debtAmount']} in ${monthsRounded} months',
-                                                            Colors.white,
-                                                            1,
-                                                            TextAlign.left),
-                                                      ],
-                                                    ),
+                                                      //the outsatanding amount and the months
+                                                      BBRM14(
+                                                          '${data?['debtAmount']} in ${monthsRounded} months',
+                                                          Colors.white,
+                                                          1,
+                                                          TextAlign.left),
+                                                    ],
                                                   ),
-                                                  onTap: () {
-                                                    Navigator.of(context)
-                                                        .push(MaterialPageRoute(
-                                                            builder:
-                                                                (context) =>
-                                                                    DebtTest(
-                                                                      debtDetails:
-                                                                          data,
-                                                                      documentID: snapshot
-                                                                          .data
-                                                                          ?.docs[
-                                                                              index]
-                                                                          .id,
-                                                                    )))
-                                                        .then((value) {
-                                                      setState(() {});
-                                                    });
-                                                  },
                                                 ),
                                               ),
                                             );

@@ -79,6 +79,7 @@ class _PlanSFNoDebtsState extends State<PlanSFNoDebts> {
         child: SafeArea(
             child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
                 width: MediaQuery.of(context).size.width * 0.9,
@@ -101,7 +102,7 @@ class _PlanSFNoDebtsState extends State<PlanSFNoDebts> {
                   Divider(
                     color: AppTheme.colors.blue500,
                     height: 20,
-                    thickness: 1,
+                    thickness: 2,
                   ),
 
                   MS24(),
@@ -124,7 +125,8 @@ class _PlanSFNoDebtsState extends State<PlanSFNoDebts> {
                   BBBS12('${months} months', AppTheme.colors.green800, 1,
                       TextAlign.center),
                   SS8(),
-                  NeonActiveButton('Continue', () {})
+                  NeonActiveButton('Continue', () {}),
+                  SS36(),
                 ]),
               )
             ],

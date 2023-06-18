@@ -2,6 +2,8 @@ import 'package:astute_components/astute_components.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
+import 'package:prod_mode/screens/priorityAssessment/overIndebted.dart';
+import 'package:prod_mode/screens/priorityAssessment/planSF.dart';
 import 'package:prod_mode/services/authServices.dart';
 
 class PriorityAsEFDebts extends StatefulWidget {
@@ -27,7 +29,8 @@ class _PriorityAsEFDebtsState extends State<PriorityAsEFDebts> {
 
   @override
   Widget build(BuildContext context) {
-    double? debtPercentage = (totalDebtInstallment! / totalIncome!) * 100;
+    //double? debtPercentage = (totalDebtInstallment! / totalIncome!) * 100;
+    double? debtPercentage = 50;
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width * 1.0,
@@ -66,7 +69,11 @@ class _PriorityAsEFDebtsState extends State<PriorityAsEFDebts> {
                                 6,
                                 TextAlign.center),
                             LS72(),
-                            NeonActiveButton('Continue', () {})
+                            NeonActiveButton('Continue', () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      OverIndebtedChecklist()));
+                            })
                           ],
                         )
                       : Column(
@@ -87,7 +94,10 @@ class _PriorityAsEFDebtsState extends State<PriorityAsEFDebts> {
                                 6,
                                 TextAlign.center),
                             LS72(),
-                            NeonActiveButton('Continue', () {})
+                            NeonActiveButton('Continue', () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => PlanSFNoDebts()));
+                            })
                           ],
                         )
                 ]),
