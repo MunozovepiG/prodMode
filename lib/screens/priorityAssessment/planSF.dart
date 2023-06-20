@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
+import 'package:prod_mode/homeFlow/homePage.dart';
 import 'package:prod_mode/internalComponents.dart';
 import 'package:prod_mode/services/authServices.dart';
 
@@ -115,18 +116,23 @@ class _PlanSFNoDebtsState extends State<PlanSFNoDebts> {
                   ),
 
                   MS24(),
-                  TwoColumnLabel('Target amount', '${targetAmount}'),
+                  TwoColumnLabel('Target amount', '${targetAmount}',
+                      CrossAxisAlignment.center),
                   SS16(),
-                  TwoColumnLabel('end date', '${endDate}'),
+                  TwoColumnLabel(
+                      'end date', '${endDate}', CrossAxisAlignment.center),
                   SS16(),
-                  TwoColumnLabel('start date', '${startDate}'),
+                  TwoColumnLabel(
+                      'start date', '${startDate}', CrossAxisAlignment.center),
 
                   MS32(),
                   BBBS12('${months} months', AppTheme.colors.green800, 1,
                       TextAlign.center),
                   SS8(),
-                  NeonActiveButton('Continue', () {}),
-                  SS36(),
+                  NeonActiveButton('Done', () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => HomePage()));
+                  }),
                 ]),
               )
             ],

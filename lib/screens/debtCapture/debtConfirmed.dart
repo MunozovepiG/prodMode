@@ -79,6 +79,7 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
 
   double? months;
   String? name;
+  double? paidOff = 0;
 
   Duration? duration;
   _DebtDetailsConfirmationState(
@@ -236,6 +237,7 @@ class _DebtDetailsConfirmationState extends State<DebtDetailsConfirmation> {
       'debtDescription': debtDescription,
       'debtCount': debtCount,
       'months': months,
+      'paidOff': paidOff,
     };
 
     ref.add(data);

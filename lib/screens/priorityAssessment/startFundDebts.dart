@@ -29,8 +29,8 @@ class _PriorityAsEFDebtsState extends State<PriorityAsEFDebts> {
 
   @override
   Widget build(BuildContext context) {
-    //double? debtPercentage = (totalDebtInstallment! / totalIncome!) * 100;
-    double? debtPercentage = 50;
+    double? debtPercentage = (totalDebtInstallment! / totalIncome!) * 100;
+    //double? debtPercentage = 50; for testing purposes
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width * 1.0,
@@ -69,7 +69,7 @@ class _PriorityAsEFDebtsState extends State<PriorityAsEFDebts> {
                                 6,
                                 TextAlign.center),
                             LS72(),
-                            NeonActiveButton('Continue', () {
+                            NeonActiveButton('Next', () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
                                       OverIndebtedChecklist()));
@@ -94,7 +94,7 @@ class _PriorityAsEFDebtsState extends State<PriorityAsEFDebts> {
                                 6,
                                 TextAlign.center),
                             LS72(),
-                            NeonActiveButton('Continue', () {
+                            NeonActiveButton('Next', () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => PlanSFNoDebts()));
                             })

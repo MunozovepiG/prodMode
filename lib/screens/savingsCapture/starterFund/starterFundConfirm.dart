@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:prod_mode/screens/savingsCapture/starterFund/starterFund.dart';
 import 'package:prod_mode/screens/savingsCapture/starterFund/starterFundInfo.dart';
 
-class StarterFundOverview extends StatefulWidget {
+class StarterFundConfirm extends StatefulWidget {
   String? userLocation;
   String? savingStatus;
   double? totalIncome;
@@ -16,28 +16,31 @@ class StarterFundOverview extends StatefulWidget {
   DateTime? endDate;
   String? saveCat;
   int? months;
+  String? status;
 
-  StarterFundOverview(
+  StarterFundConfirm(
       {this.userLocation,
       this.savingStatus,
       this.totalIncome,
       this.startDate,
       this.endDate,
       this.saveCat,
-      this.months});
+      this.months,
+      this.status});
 
   @override
-  State<StarterFundOverview> createState() => _StarterFundOverviewState(
+  State<StarterFundConfirm> createState() => _StarterFundConfirmState(
       userLocation,
       savingStatus,
       totalIncome,
       startDate,
       endDate,
       saveCat,
-      months);
+      months,
+      status);
 }
 
-class _StarterFundOverviewState extends State<StarterFundOverview> {
+class _StarterFundConfirmState extends State<StarterFundConfirm> {
   DateFormat formatter = DateFormat('E, dd, MM, yyyy');
   String? userLocation;
   String? savingStatus;
@@ -50,15 +53,18 @@ class _StarterFundOverviewState extends State<StarterFundOverview> {
   int? months;
   double? formattedMonths;
   double? targetAmount;
+  String? status;
+  double? amountSaved = 0;
 
-  _StarterFundOverviewState(
+  _StarterFundConfirmState(
       this.userLocation,
       this.savingStatus,
       this.totalIncome,
       this.startDate,
       this.endDate,
       this.saveCat,
-      this.months);
+      this.months,
+      this.status);
 
   //the currency identification
 
@@ -199,6 +205,10 @@ class _StarterFundOverviewState extends State<StarterFundOverview> {
       'targetAmount': targetAmount,
       'formattedEndDate': formatter.format(endDate!),
       'formattedStartDate': formatter.format(startDate!),
+      'contributions': installment,
+      'status': status,
+      'amountSaved': amountSaved,
+
       // this system to be developed 'goalStatus': ,
     };
 

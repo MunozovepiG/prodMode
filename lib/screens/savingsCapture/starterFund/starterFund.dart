@@ -44,6 +44,7 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
   String? startDateText = 'Recommended start date';
   String? endDateText = 'Recommended end date';
   String? savingStatus;
+  String? status;
 
   _StarterFundDetailsState(this.userLocation, this.totalIncome,
       this.savingStatus, this.months, this.endDate);
@@ -218,7 +219,7 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
                 SS36(),
                 NeonActiveButton('Next', () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => StarterFundOverview(
+                      builder: (context) => StarterFundConfirm(
                             userLocation: userLocation,
                             savingStatus: savingStatus,
                             totalIncome: totalIncome,
@@ -226,6 +227,7 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
                             endDate: endDate,
                             saveCat: 'Starter fund',
                             months: months,
+                            status: status,
                           )));
                 })
               ],
@@ -249,6 +251,11 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
       setState(() {
         startDate = pickedDate;
         startDateText = 'Selected start date';
+        if (startDate == DateTime.now()) {
+          status = 'started';
+        } else {
+          status = 'notStarted';
+        }
       });
     }
   }

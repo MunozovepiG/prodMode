@@ -14,7 +14,7 @@ class SavingsLanding extends StatefulWidget {
 class _SavingsLandingState extends State<SavingsLanding> {
   String? savingStatus;
   String? userLocation;
-  double? totalIncome;
+  double? totalIncome = 0;
   double? calculatedMonths;
   int? months;
   DateTime? endDate;

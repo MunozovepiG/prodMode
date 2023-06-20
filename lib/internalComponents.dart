@@ -27,17 +27,77 @@ class RowLabel extends StatelessWidget {
 class TwoColumnLabel extends StatelessWidget {
   String description;
   String content;
+  CrossAxisAlignment cross;
 
-  TwoColumnLabel(this.description, this.content);
+  TwoColumnLabel(this.description, this.content, this.cross);
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: cross,
       children: [
-        BBRS12(description, AppTheme.colors.black, 1, TextAlign.center),
+        BBRS12(description, AppTheme.colors.black, 1, TextAlign.left),
         SS8(),
         BBLM14(content, AppTheme.colors.black, 1)
       ],
     );
+  }
+}
+
+//the bottom navigation
+
+class CustomNavigation extends StatefulWidget {
+  bool? isHome;
+
+  CustomNavigation({this.isHome});
+
+  @override
+  State<CustomNavigation> createState() => _CustomNavigationState(isHome);
+}
+
+class _CustomNavigationState extends State<CustomNavigation> {
+  bool? isHome;
+
+  _CustomNavigationState(this.isHome);
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+        bottom: 0,
+        child: Container(
+          height: 44,
+          width: MediaQuery.of(context).size.width * 0.9,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              // Color.fromRGBO(255, 255, 255, 0.85),
+              borderRadius: BorderRadius.circular(10.0),
+              border: Border.all(color: Colors.white, width: 1.0)),
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: 8.0, left: 10, right: 10, bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    (isHome!)
+                        ? Icon(
+                            Icons.home,
+                            color: AppTheme.colors.blue500,
+                          )
+                        : Icon(
+                            Icons.home_outlined,
+                            color: AppTheme.colors.blue500,
+                          ),
+                    SizedBox(
+                      width: 4,
+                    ),
+                    BBBS12('Home', AppTheme.colors.blue500, 1, TextAlign.left),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ));
   }
 }
