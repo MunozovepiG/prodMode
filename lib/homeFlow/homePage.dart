@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:prod_mode/homeFlow/testUpdate.dart';
 import 'package:prod_mode/internalComponents.dart';
 import 'package:intl/intl.dart';
+import 'package:prod_mode/screens/manageSavings/manageSavingsLanding.dart';
 import 'package:prod_mode/services/authServices.dart';
 
 //the logic how to track the savings
@@ -268,7 +269,6 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CBButton(),
                       MS24(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -332,7 +332,7 @@ class _HomePageState extends State<HomePage> {
                       SS16(),
                       //the end date
                       TwoColumnLabel(
-                        'Monthly savings',
+                        'End date',
                         '$endDateText', // this will be pulled and updated from the firebaseDb
                         CrossAxisAlignment.start,
                       ),
@@ -427,7 +427,12 @@ class _HomePageState extends State<HomePage> {
                                                   MainAxisAlignment.end,
                                               children: [
                                                 SmallView(Icons.arrow_forward,
-                                                    'manage savings', () {}),
+                                                    'manage savings', () {
+                                                  // Navigator.of(context).push(
+                                                  // MaterialPageRoute(
+                                                  // builder://(context) =>
+                                                  // savingManagement()));
+                                                }),
                                               ],
                                             ),
                                             BBBS12(

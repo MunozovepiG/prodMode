@@ -207,7 +207,9 @@ class _StarterFundConfirmState extends State<StarterFundConfirm> {
       'formattedStartDate': formatter.format(startDate!),
       'contributions': installment,
       'status': status,
-      'amountSaved': amountSaved,
+      'amountSaved': 200, //change back to amountSaved
+      'payment1': 200,
+      'paymentDate1': DateTime.now(),
 
       // this system to be developed 'goalStatus': ,
     };
