@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Test extends StatelessWidget {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   List<Map<String, dynamic>> data = [
     {
       'goal': 'Goal 1',
@@ -34,11 +38,91 @@ class Test extends StatelessWidget {
         title: Text('Grouped Payments'),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            groupPaymentsByMonth(data);
-          },
-          child: Text('Group Payments'),
+        child: Column(
+          children: [
+            TextButton(
+                onPressed: () {
+                  saveDataToFirebase();
+                },
+                child: Text('test')),
+            Container(
+              height: 450,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(FirebaseAuth.instance.currentUser?.uid)
+                    .collection('testData')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+
+                  if (!snapshot.hasData) {
+                    return Text('No data available');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+
+                  List<DocumentSnapshot> documents = snapshot.data!.docs;
+
+                  return ListView.builder(
+                    itemCount: documents.length,
+                    itemBuilder: (context, index) {
+                      Map<String, dynamic>? data =
+                          documents[index].data() as Map<String, dynamic>?;
+                      String goal = data?['goal'];
+                      List<dynamic> payments = data?['payments'];
+
+                      return Card(
+                        child: ListTile(
+                            title: Text('Goal: $goal'),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: payments.map((payment) {
+                                int amount = payment['amount'];
+                                String date = payment['date'];
+                                return Text(
+                                    'Payment - Amount: $amount, Date: $date');
+                              }).toList(),
+                            ),
+                            trailing: ElevatedButton(
+                              onPressed: () {
+                                // Add the new payment to the payments list
+                                payments.add({
+                                  'amount': 900,
+                                  'date': DateTime.now().toString(),
+                                });
+
+                                // Update the payments field in Firestore
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(FirebaseAuth.instance.currentUser?.uid)
+                                    .collection('testData')
+                                    .doc(documents[index].id)
+                                    .update({'payments': payments})
+                                    .then((_) =>
+                                        print('Payment added successfully'))
+                                    .catchError((error) =>
+                                        print('Failed to add payment: $error'));
+                              },
+                              child: Text('Add Payment'),
+                            )),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                groupPaymentsByMonth(data);
+              },
+              child: Text('Group Payments'),
+            ),
+          ],
         ),
       ),
     );
@@ -86,5 +170,59 @@ class Test extends StatelessWidget {
       });
       print('\n');
     });
+  }
+
+  void saveDataToFirebase() async {
+    CollectionReference ref = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection('testData');
+
+    Map<String, dynamic> data = {
+      'goal': 'Goal 1',
+      'payments': [
+        {'amount': 500, 'date': 'June 8, 2023'},
+        {'amount': 900, 'date': 'June 19, 2023'},
+      ],
+    };
+
+    try {
+      await ref.add(data);
+      print('Data saved successfully!');
+    } catch (e) {
+      print('Error saving data: $e');
+    }
+  }
+
+  void readDataFromFirebase() async {
+    CollectionReference ref = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection('testData');
+
+    try {
+      QuerySnapshot querySnapshot = await ref.get();
+      if (querySnapshot.docs.isNotEmpty) {
+        for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+          Map<String, dynamic>? data =
+              documentSnapshot.data() as Map<String, dynamic>?;
+          // Access the fields of the document
+          String goal = data?['goal'];
+          List<dynamic> payments = data?['payments'];
+
+          // Print the data
+          print('Goal: $goal');
+          for (var payment in payments) {
+            int amount = payment['amount'];
+            String date = payment['date'];
+            print('Payment - Amount: $amount, Date: $date');
+          }
+        }
+      } else {
+        print('No documents found.');
+      }
+    } catch (e) {
+      print('Error reading data: $e');
+    }
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:prod_mode/homeFlow/homePage.dart';
 import 'package:prod_mode/internalComponents.dart';
+import 'package:prod_mode/screens/manageSavings/manageSavingsLanding.dart';
 import 'package:prod_mode/services/authServices.dart';
 
 class PlanSFNoDebts extends StatefulWidget {
@@ -130,8 +131,8 @@ class _PlanSFNoDebtsState extends State<PlanSFNoDebts> {
                       TextAlign.center),
                   SS8(),
                   NeonActiveButton('Done', () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => HomePage()));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => Test()));
                   }),
                 ]),
               )

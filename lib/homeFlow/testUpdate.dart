@@ -13,6 +13,7 @@ class TestPage extends StatefulWidget {
 class _TestPageState extends State<TestPage> {
   final TextEditingController _userNameController = TextEditingController();
   bool isEditing = false;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   final CollectionReference ref = FirebaseFirestore.instance
       .collection('users')
@@ -102,4 +103,6 @@ class _TestPageState extends State<TestPage> {
       ),
     );
   }
+
+  //testing new data structure
 }
