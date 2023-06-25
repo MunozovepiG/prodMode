@@ -66,7 +66,6 @@ class Test extends StatelessWidget {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
                   }
-
                   List<DocumentSnapshot> documents = snapshot.data!.docs;
 
                   return ListView.builder(
@@ -75,7 +74,11 @@ class Test extends StatelessWidget {
                       Map<String, dynamic> data =
                           documents[index].data() as Map<String, dynamic>;
                       String goal = data?['goal'];
-                      var payments = data!['payments'];
+                      List<dynamic> payments = [];
+
+                      if (data?['payments'] is List<dynamic>) {
+                        payments = List.from(data?['payments']);
+                      }
 
                       return InkWell(
                         child: Card(
