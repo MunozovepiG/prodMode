@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:prod_mode/firebase_options.dart';
-import 'package:prod_mode/screens/manageSavings/manageSavingsLanding.dart';
+import 'package:prod_mode/screens/manageSavings/testStructure.dart';
 import 'package:prod_mode/screens/onboarding/landing.dart';
 
 void main() async {

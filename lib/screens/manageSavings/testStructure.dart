@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:prod_mode/screens/manageSavings/testCard.dart';
 
 class Test extends StatelessWidget {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -71,17 +72,18 @@ class Test extends StatelessWidget {
                   return ListView.builder(
                     itemCount: documents.length,
                     itemBuilder: (context, index) {
-                      Map<String, dynamic>? data =
-                          documents[index].data() as Map<String, dynamic>?;
+                      Map<String, dynamic> data =
+                          documents[index].data() as Map<String, dynamic>;
                       String goal = data?['goal'];
-                      List<dynamic> payments = data?['payments'];
+                      var payments = data!['payments'];
 
-                      return Card(
-                        child: ListTile(
+                      return InkWell(
+                        child: Card(
+                          child: ListTile(
                             title: Text('Goal: $goal'),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: payments.map((payment) {
+                              children: payments.map<Widget>((payment) {
                                 int amount = payment['amount'];
                                 String date = payment['date'];
                                 return Text(
@@ -109,7 +111,24 @@ class Test extends StatelessWidget {
                                         print('Failed to add payment: $error'));
                               },
                               child: Text('Add Payment'),
-                            )),
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditPaymentScreen(
+                                paymentRef: FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(FirebaseAuth.instance.currentUser?.uid)
+                                    .collection('testData')
+                                    .doc(documents[index].id),
+                                paymentIndex: index,
+                              ),
+                            ),
+                          );
+                        },
                       );
                     },
                   );

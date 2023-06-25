@@ -196,7 +196,7 @@ class _StarterFundConfirmState extends State<StarterFundConfirm> {
         .collection('userSaveDetails');
     DateFormat formatter = DateFormat('E, dd, MM, yyyy');
 
-    var data = {
+    Map<String, dynamic> data = {
       'startDate': startDate,
       'endDate': endDate,
       'saveCat': saveCat,
@@ -210,6 +210,9 @@ class _StarterFundConfirmState extends State<StarterFundConfirm> {
       'amountSaved': 200, //change back to amountSaved
       'payment1': 200,
       'paymentDate1': DateTime.now(),
+      'payments': [
+        {'amount': 0, 'date': startDate}
+      ]
 
       // this system to be developed 'goalStatus': ,
     };

@@ -8,7 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:prod_mode/homeFlow/testUpdate.dart';
 import 'package:prod_mode/internalComponents.dart';
 import 'package:intl/intl.dart';
-import 'package:prod_mode/screens/manageSavings/manageSavingsLanding.dart';
+import 'package:prod_mode/screens/manageSavings/testStructure.dart';
 import 'package:prod_mode/services/authServices.dart';
 
 //the logic how to track the savings
@@ -428,9 +428,10 @@ class _HomePageState extends State<HomePage> {
                                               children: [
                                                 SmallView(Icons.arrow_forward,
                                                     'manage savings', () {
-                                                  // Navigator.of(context).push(
-                                                  // MaterialPageRoute(
-                                                  // builder://(context) =>
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              Test()));
                                                   // savingManagement()));
                                                 }),
                                               ],
