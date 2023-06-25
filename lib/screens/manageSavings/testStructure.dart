@@ -7,31 +7,6 @@ import 'package:prod_mode/screens/manageSavings/testCard.dart';
 class Test extends StatelessWidget {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  List<Map<String, dynamic>> data = [
-    {
-      'goal': 'Goal 1',
-      'payments': [
-        {'amount': 500, 'date': 'June 8, 2023'},
-        {'amount': 900, 'date': 'June 19, 2023'},
-      ],
-    },
-    {
-      'goal': 'Goal 2',
-      'payments': [
-        {'amount': 800, 'date': 'June 8, 2023'},
-        {'amount': 900, 'date': 'June 19, 2023'},
-        {'amount': 700, 'date': 'May 30, 2023'},
-      ],
-    },
-    {
-      'goal': 'Goal 3',
-      'payments': [
-        {'amount': 800, 'date': 'March 3, 2023'},
-        {'amount': 0, 'date': null},
-      ],
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,12 +113,37 @@ class Test extends StatelessWidget {
                 },
               ),
             ),
+            SizedBox(
+              height: 55,
+            ),
             ElevatedButton(
               onPressed: () {
-                groupPaymentsByMonth(data);
+                FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(FirebaseAuth.instance.currentUser?.uid)
+                    .collection('testData')
+                    .get()
+                    .then((querySnapshot) {
+                  List<Map<String, dynamic>> data = [];
+                  for (var documentSnapshot in querySnapshot.docs) {
+                    Map<String, dynamic>? documentData =
+                        documentSnapshot.data() as Map<String, dynamic>?;
+                    if (documentData != null) {
+                      data.add(documentData);
+                    }
+                  }
+                  groupPaymentsByMonth(data);
+                }).catchError((error) {
+                  print('Error fetching data: $error');
+                });
               },
               child: Text('Group Payments'),
             ),
+            TextButton(
+                onPressed: () {
+                  readTestData();
+                },
+                child: Text('date'))
           ],
         ),
       ),
@@ -151,9 +151,15 @@ class Test extends StatelessWidget {
   }
 
   void groupPaymentsByMonth(List<Map<String, dynamic>> data) {
-    Map<String, List<Map<String, dynamic>>> groupedPayments = {};
+    Map<String, num> monthlyTotals = {};
 
-    DateFormat dateFormatter = DateFormat('MMMM d, y');
+    DateFormat dateFormatter = DateFormat('yyyy-MM-dd HH:mm:ss.SSSSSS');
+
+    // Initialize monthly totals for all months to 0
+    for (int month = 1; month <= 12; month++) {
+      final monthName = DateFormat.MMMM().format(DateTime(2000, month));
+      monthlyTotals[monthName] = 0;
+    }
 
     for (var item in data) {
       for (var payment in item['payments']) {
@@ -162,36 +168,19 @@ class Test extends StatelessWidget {
 
         if (paymentDate != null) {
           final parsedDate = dateFormatter.parse(paymentDate);
-          final month = parsedDate.month;
-          final monthKey = 'Month $month';
-
-          if (groupedPayments.containsKey(monthKey)) {
-            groupedPayments[monthKey]!.add({
-              'Payment Amount': paymentAmount,
-              'Payment Date': parsedDate,
-            });
-          } else {
-            groupedPayments[monthKey] = [
-              {
-                'Payment Amount': paymentAmount,
-                'Payment Date': parsedDate,
-              }
-            ];
-          }
+          final monthName = DateFormat.MMMM().format(parsedDate);
+          monthlyTotals[monthName] =
+              (monthlyTotals[monthName] ?? 0) + paymentAmount;
         }
       }
     }
 
-    // Print the grouped payments
-    groupedPayments.forEach((monthKey, payments) {
-      print('Month: $monthKey');
-      payments.forEach((payment) {
-        final paymentAmount = payment['Payment Amount'];
-        final paymentDate = payment['Payment Date'];
-        print('Payment Amount: $paymentAmount, Date: $paymentDate');
-      });
-      print('\n');
-    });
+    // Print the monthly totals
+    for (int month = 1; month <= 12; month++) {
+      final monthName = DateFormat.MMMM().format(DateTime(2000, month));
+      final total = monthlyTotals[monthName] ?? 0;
+      print('Month: $monthName, Total Amount: $total');
+    }
   }
 
   void saveDataToFirebase() async {
@@ -246,5 +235,37 @@ class Test extends StatelessWidget {
     } catch (e) {
       print('Error reading data: $e');
     }
+  }
+}
+
+void readTestData() async {
+  CollectionReference ref = FirebaseFirestore.instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser?.uid)
+      .collection('testData');
+
+  try {
+    QuerySnapshot querySnapshot = await ref.get();
+    if (querySnapshot.docs.isNotEmpty) {
+      for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+        Map<String, dynamic>? data =
+            documentSnapshot.data() as Map<String, dynamic>?;
+        // Access the fields of the document
+        String goal = data?['goal'];
+        List<dynamic> payments = data?['payments'];
+
+        // Print the data
+        print('Goal: $goal');
+        for (var payment in payments) {
+          int amount = payment['amount'];
+          String date = payment['date'];
+          print('Payment - Amount: $amount, Date: $date');
+        }
+      }
+    } else {
+      print('No documents found.');
+    }
+  } catch (e) {
+    print('Error reading data: $e');
   }
 }
