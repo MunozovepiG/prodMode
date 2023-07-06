@@ -168,7 +168,7 @@ class _DebtOverviewState extends State<DebtOverview> {
 //credit cards
                           if (creditCardTotal.isNotEmpty) {
                             totalCreditCards = creditCardTotal.sum;
-                            totalCarloanstext =
+                            totalCreditCardtext =
                                 totalCreditCards!.toStringAsFixed(2);
                           } else {
                             totalCreditCards = 0;
@@ -246,6 +246,7 @@ class _DebtOverviewState extends State<DebtOverview> {
                         return Column(
                           children: [
                             //the header
+
                             BHCTSh(
                                 false,
                                 'Keep',
@@ -337,7 +338,9 @@ class _DebtOverviewState extends State<DebtOverview> {
                               children: [
                                 SmallView(Icons.add, 'add new', () {
                                   Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => DebtDetails()));
+                                      builder: (context) => DebtDetails(
+                                            name: name,
+                                          )));
                                 }),
                               ],
                             ),

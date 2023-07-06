@@ -34,7 +34,7 @@ class _DebtsLandingState extends State<DebtsLanding> {
         dynamic fieldValue = documentSnapshot.get('userName');
 
         // Do something with the value
-        print('Field Value: $fieldValue');
+        print('Name: $fieldValue');
         setState(() {
           name = fieldValue;
         });

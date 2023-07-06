@@ -45,6 +45,7 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
   String? endDateText = 'Recommended end date';
   String? savingStatus;
   String? status;
+  int? newDays;
 
   _StarterFundDetailsState(this.userLocation, this.totalIncome,
       this.savingStatus, this.months, this.endDate);
@@ -227,7 +228,7 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
                             endDate: endDate,
                             saveCat: 'Starter fund',
                             months: months,
-                            status: status,
+                            //status: status, this should be checked dynamically
                           )));
                 })
               ],
@@ -251,11 +252,9 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
       setState(() {
         startDate = pickedDate;
         startDateText = 'Selected start date';
-        if (startDate == DateTime.now()) {
-          status = 'started';
-        } else {
-          status = 'notStarted';
-        }
+        newDays = endDate!.difference(startDate!).inDays;
+        months = (newDays! / 30).ceil();
+        print('this is the months: $months');
       });
     }
   }
@@ -278,6 +277,9 @@ class _StarterFundDetailsState extends State<StarterFundDetails> {
       setState(() {
         endDate = pickedDate;
         endDateText = 'Selected end date';
+        newDays = endDate!.difference(startDate!).inDays;
+        months = (newDays! / 30).ceil();
+        print('this is the months: $months');
       });
     }
   }

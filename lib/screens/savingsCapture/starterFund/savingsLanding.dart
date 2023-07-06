@@ -16,9 +16,9 @@ class _SavingsLandingState extends State<SavingsLanding> {
   String? userLocation;
   double? totalIncome = 0;
   double? calculatedMonths;
-  int? months;
+  int? months = 3; // for testing purposes defaulted
   DateTime? endDate;
-
+  double? targetAmount;
   //userLocation extraction
   CollectionReference userDetails = FirebaseFirestore.instance
       .collection('users')
@@ -45,6 +45,21 @@ class _SavingsLandingState extends State<SavingsLanding> {
 
         setState(() {
           totalIncome = income;
+          if (userLocation == 'South Africa') {
+            calculatedMonths = (20000 / (totalIncome! * 0.1));
+            print('calculated values $calculatedMonths');
+            months = calculatedMonths!.ceil();
+            targetAmount = 20000;
+            print('months $months');
+            endDate = DateTime.now().add(Duration(days: 30 * months!));
+          } else {
+            calculatedMonths = (1000 / (totalIncome! * 0.1)).ceilToDouble();
+            months = calculatedMonths!.ceil();
+            targetAmount = 1000;
+            print('calculated values $calculatedMonths');
+            print('months $months');
+            endDate = DateTime.now().add(Duration(days: 30 * months!));
+          }
           print('total $totalIncome');
         });
       } else {
@@ -83,6 +98,7 @@ class _SavingsLandingState extends State<SavingsLanding> {
     super.initState();
     getUserDetails();
     getIncomeDetails();
+
 // an extraction of the user's location
   }
 
@@ -156,21 +172,7 @@ class _SavingsLandingState extends State<SavingsLanding> {
                         (savingStatus != null)
                             ? NeonActiveButton('Next', () {
 //need to calculate the potential endDate
-                                if (userLocation == 'South Africa') {
-                                  calculatedMonths =
-                                      (20000 / (totalIncome! * 0.1))
-                                          .ceilToDouble();
-                                  months = calculatedMonths!.round();
-                                  endDate = DateTime.now()
-                                      .add(Duration(days: 30 * months!));
-                                } else {
-                                  calculatedMonths =
-                                      (1000 / (totalIncome! * 0.1))
-                                          .ceilToDouble();
-                                  months = calculatedMonths!.round();
-                                  endDate = DateTime.now()
-                                      .add(Duration(days: 30 * months!));
-                                }
+
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => StarterFundDetails(
                                           userLocation: userLocation,
@@ -178,6 +180,7 @@ class _SavingsLandingState extends State<SavingsLanding> {
                                           savingStatus: savingStatus,
                                           months: months,
                                           endDate: endDate,
+                                          //targetAmount: targetAmount;
                                         )));
                               })
                             : DisabledRoundButton('Next', () {})

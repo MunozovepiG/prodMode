@@ -55,6 +55,8 @@ class _StarterFundConfirmState extends State<StarterFundConfirm> {
   double? targetAmount;
   String? status;
   double? amountSaved = 0;
+  double? checkData = 0;
+  double totalAmount = 0;
 
   _StarterFundConfirmState(
       this.userLocation,
@@ -77,12 +79,17 @@ class _StarterFundConfirmState extends State<StarterFundConfirm> {
   Widget build(BuildContext context) {
     if (userLocation == 'South Africa') {
       currency = 'ZAR';
-      installment = (20000 / formattedMonths!);
+      // installment = 0.10 * totalIncome!;
       targetAmount = 20000.00;
+      installment = targetAmount! / months!;
+      checkData = installment! * months!;
     } else {
       currency = 'USD';
-      installment = (20000 / formattedMonths!);
+      //installment = 0.10 * totalIncome!;
+
       targetAmount = 1000.00;
+      installment = targetAmount! / months!;
+      checkData = installment! * months!;
     }
 
     return Scaffold(
@@ -201,17 +208,16 @@ class _StarterFundConfirmState extends State<StarterFundConfirm> {
       'endDate': endDate,
       'saveCat': saveCat,
       'months': months,
-      'savingStatus': savingStatus,
+      'description': 'Building up savings',
+      //'savingStatus': savingStatus, this is inferred
       'targetAmount': targetAmount,
       'formattedEndDate': formatter.format(endDate!),
       'formattedStartDate': formatter.format(startDate!),
       'contributions': installment,
-      'status': status,
-      'amountSaved': 200, //change back to amountSaved
-      'payment1': 200,
-      'paymentDate1': DateTime.now(),
+      // 'status': status, this will be a dynamic value
+      'amountSaved': amountSaved, //change back to amountSaved
       'payments': [
-        {'amount': 0, 'date': startDate}
+        {'amount': amountSaved, 'date': startDate}
       ]
 
       // this system to be developed 'goalStatus': ,

@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:prod_mode/homeFlow/testUpdate.dart';
 import 'package:prod_mode/internalComponents.dart';
 import 'package:intl/intl.dart';
+import 'package:prod_mode/screens/manageSavings/manageSavings.dart';
 import 'package:prod_mode/screens/manageSavings/testStructure.dart';
 import 'package:prod_mode/services/authServices.dart';
 
@@ -67,6 +68,7 @@ class _HomePageState extends State<HomePage> {
   double? priorityTarget = 0;
   String? endDateText = '';
   DateTime? startDate;
+  DateTime? endDate;
   Duration? duration;
   String? currency;
   String? location;
@@ -99,11 +101,13 @@ class _HomePageState extends State<HomePage> {
         dynamic endValue = documentSnapshot.get('formattedEndDate');
         dynamic installmentValue = documentSnapshot.get('contributions');
         dynamic startValue = documentSnapshot.get('startDate').toDate();
+        dynamic endValueDate = documentSnapshot.get('endDate').toDate();
 
         // Do something with the value
 
         setState(() {
           priorityTarget = targetValue;
+          endDate = endValueDate;
           endDateText = endValue;
           priorityInstallment = installmentValue;
           startDate = startValue;
@@ -111,7 +115,7 @@ class _HomePageState extends State<HomePage> {
           print('this is the $startDate');
 
           if (status == 'started') {
-            duration = startDate!.difference(DateTime.now());
+            duration = endDate!.difference(DateTime.now());
             timePeriod = (duration!.inDays! / 30).ceil().toInt();
             expectedAmount = timePeriod! * priorityInstallment!;
 
@@ -264,6 +268,8 @@ class _HomePageState extends State<HomePage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                //to delete this back button
+                // CBButton(),
                 Container(
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: Column(
@@ -290,7 +296,10 @@ class _HomePageState extends State<HomePage> {
                           Container(
                             width: 14,
                             height: 14,
-                            color: AppTheme.colors.blue200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppTheme.colors.blue200,
+                            ),
                             child: Icon(
                               Icons.arrow_upward,
                               size: 12,
@@ -301,7 +310,7 @@ class _HomePageState extends State<HomePage> {
                             width: 8,
                           ),
                           Text(
-                            'On track: 7 months to go',
+                            'On track: ${timePeriod} months to go',
                             style: GoogleFonts.montserrat(
                                 fontStyle: FontStyle.italic,
                                 fontSize: 10,
@@ -431,7 +440,7 @@ class _HomePageState extends State<HomePage> {
                                                   Navigator.of(context).push(
                                                       MaterialPageRoute(
                                                           builder: (context) =>
-                                                              Test()));
+                                                              ManageSavings()));
                                                   // savingManagement()));
                                                 }),
                                               ],
