@@ -10,15 +10,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:prod_mode/screens/manageSavings/barChartData/chartModel.dart';
 import 'package:prod_mode/screens/manageSavings/barchart.dart';
 import 'package:prod_mode/screens/manageSavings/savingsCard.dart';
 import 'package:prod_mode/screens/manageSavings/testCard.dart';
 
 class ManageSavings extends StatelessWidget {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  List<SavingDataModel> exData = [];
 
 //calculation of payments
   double calculateTotal(List<Map<String, dynamic>> payments) {
@@ -223,79 +220,11 @@ class ManageSavings extends StatelessWidget {
                   },
                 ),
               ),
-
-              TextButton(
-                onPressed: () {
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(FirebaseAuth.instance.currentUser?.uid)
-                      .collection('userSaveDetails')
-                      .get()
-                      .then((querySnapshot) {
-                    List<Map<String, dynamic>> data = [];
-                    for (var documentSnapshot in querySnapshot.docs) {
-                      Map<String, dynamic>? documentData =
-                          documentSnapshot.data() as Map<String, dynamic>?;
-                      if (documentData != null) {
-                        data.add(documentData);
-                      }
-                    }
-                    List<SavingDataModel> chartData =
-                        groupPaymentsByMonth(data);
-                    exData = chartData;
-                    print(chartData); // Use the chart data as needed
-                  }).catchError((error) {
-                    print('Error fetching data: $error');
-                  });
-                },
-                child: Text('Testdata'),
-              ),
             ]),
           ),
         ],
       ),
     )));
-  }
-
-  List<SavingDataModel> groupPaymentsByMonth(List<Map<String, dynamic>> data) {
-    List<SavingDataModel> _list = [];
-
-    Map<String, num> monthlyTotals = {};
-    DateFormat dateFormatter = DateFormat('yyyy-MM-dd HH:mm:ss.SSSSSS');
-
-    // Initialize monthly totals for all months to 0
-    for (int month = 1; month <= 12; month++) {
-      final monthName = DateFormat.MMMM().format(DateTime(2000, month));
-      monthlyTotals[monthName] = 0;
-    }
-
-    for (var item in data) {
-      for (var payment in item['payments']) {
-        final paymentAmount = payment['amount'];
-        final paymentDate = payment['date'];
-
-        if (paymentDate != null && paymentDate is Timestamp) {
-          final parsedDate = (paymentDate as Timestamp).toDate();
-          final monthName = DateFormat.MMMM().format(parsedDate);
-          monthlyTotals[monthName] =
-              (monthlyTotals[monthName] ?? 0) + paymentAmount;
-        }
-      }
-    }
-
-    // Print the monthly totals
-    for (int month = 1; month <= 12; month++) {
-      final monthName = DateFormat.MMMM().format(DateTime(2000, month));
-      final total = monthlyTotals[monthName] ?? 0;
-      print('Month: $monthName, Total Amount: $total');
-
-      SavingDataModel dataModel =
-          SavingDataModel(key: monthName, value: total.toString());
-      _list.add(dataModel);
-    }
-
-    // Return the chart data
-    return _list;
   }
 
   void readDataFromFirebase() async {
