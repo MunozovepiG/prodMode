@@ -370,9 +370,9 @@ class ManageSavings extends StatelessWidget {
     DateFormat formatter = DateFormat('E, dd, MM, yyyy');
     DateTime endDate = DateTime(2024, 7, 6);
     DateTime startDate = DateTime(2023, 6, 18);
-    double contributions = 500;
-    double amount1 = 100;
-    double amount2 = 400;
+    double contributions = 500.00;
+    double amount1 = 100.00;
+    double amount2 = 400.00;
 
     Map<String, dynamic> data = {
       'startDate': startDate,

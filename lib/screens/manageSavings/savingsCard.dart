@@ -17,11 +17,14 @@ class SavingsCard extends StatefulWidget {
 class _SavingsCardState extends State<SavingsCard> {
   List<String> notifications = [];
   double? paymentAmount;
+  double balanceAmount = 0.0;
+  double? balance;
 
   @override
   void initState() {
     super.initState();
     fetchNotifications();
+    calculateBalance();
   }
 
   void fetchNotifications() {
@@ -39,6 +42,28 @@ class _SavingsCardState extends State<SavingsCard> {
     });
   }
 
+  void calculateBalance() {
+    widget.paymentRef.get().then((snapshot) {
+      if (snapshot.exists) {
+        Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+
+        if (data != null && data.containsKey('payments')) {
+          List<dynamic> payments = data['payments'];
+          double totalAmount = 0.0;
+          for (var payment in payments) {
+            totalAmount += payment['amount'];
+          }
+          balanceAmount = totalAmount;
+        }
+      }
+      setState(() {
+        balance = balanceAmount;
+      });
+    }).catchError((error) {
+      print('Failed to calculate balance: $error');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +76,7 @@ class _SavingsCardState extends State<SavingsCard> {
             child: Column(
               children: [
                 CBButton(),
+                Text('balance amount: $balance'),
                 Text('insert graphs'),
                 Container(
                   width: MediaQuery.of(context).size.width * 0.9,
