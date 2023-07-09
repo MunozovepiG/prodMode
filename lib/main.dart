@@ -2,9 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:prod_mode/firebase_options.dart';
+import 'package:prod_mode/screens/manageSavings/barchart.dart';
 import 'package:prod_mode/screens/manageSavings/testStructure.dart';
 import 'package:prod_mode/screens/onboarding/landing.dart';
-import 'package:prod_mode/testchart.dart';
+import 'package:prod_mode/testFiles/testchart.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
