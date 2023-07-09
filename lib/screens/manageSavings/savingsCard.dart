@@ -1,30 +1,37 @@
 import 'package:astute_components/astute_components.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:prod_mode/screens/manageSavings/manageSavings.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class SavingsCard extends StatefulWidget {
   final DocumentReference paymentRef;
   final int paymentIndex;
+  final double? balance;
+  final Function? onUpdateTotalAmount; // Callback function
 
-  SavingsCard({required this.paymentRef, required this.paymentIndex});
+  SavingsCard({
+    required this.paymentRef,
+    required this.paymentIndex,
+    this.balance,
+    this.onUpdateTotalAmount,
+  });
 
   @override
-  State<SavingsCard> createState() => _SavingsCardState();
+  _SavingsCardState createState() => _SavingsCardState();
 }
 
 class _SavingsCardState extends State<SavingsCard> {
   List<String> notifications = [];
   double? paymentAmount;
-  double balanceAmount = 0.0;
   double? balance;
 
   @override
   void initState() {
     super.initState();
     fetchNotifications();
-    calculateBalance();
+    updateBalance();
   }
 
   void fetchNotifications() {
@@ -42,7 +49,7 @@ class _SavingsCardState extends State<SavingsCard> {
     });
   }
 
-  void calculateBalance() {
+  void updateBalance() {
     widget.paymentRef.get().then((snapshot) {
       if (snapshot.exists) {
         Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
@@ -53,113 +60,202 @@ class _SavingsCardState extends State<SavingsCard> {
           for (var payment in payments) {
             totalAmount += payment['amount'];
           }
-          balanceAmount = totalAmount;
+          setState(() {
+            balance = totalAmount;
+          });
         }
       }
-      setState(() {
-        balance = balanceAmount;
-      });
     }).catchError((error) {
-      print('Failed to calculate balance: $error');
+      print('Failed to update balance: $error');
     });
+  }
+
+  Future<Map<int, double>> _calculateTotalAmountsPerMonth() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final userSaveDetailsRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser?.uid)
+        .collection('userSaveDetails');
+
+    final querySnapshot = await userSaveDetailsRef.get();
+
+    final Map<int, double> amountsPerMonth = {};
+
+    for (final document in querySnapshot.docs) {
+      final payments = document.data()['payments'] as List<dynamic>;
+
+      for (final payment in payments) {
+        final amount = payment['amount'] as double;
+        final date = payment['date'] as Timestamp;
+
+        final paymentYear = date.toDate().year;
+        final paymentMonth = date.toDate().month;
+
+        final now = DateTime.now();
+        final currentYear = now.year;
+
+        if (paymentYear == currentYear) {
+          if (amountsPerMonth.containsKey(paymentMonth)) {
+            final currentAmount = amountsPerMonth[paymentMonth] ?? 0;
+            amountsPerMonth[paymentMonth] = (currentAmount + amount);
+          } else {
+            amountsPerMonth[paymentMonth] = amount;
+          }
+        }
+      }
+    }
+
+    return amountsPerMonth;
   }
 
   @override
   Widget build(BuildContext context) {
+    // Update balance only if the balance parameter is not null
+    if (widget.balance != null && balance != widget.balance) {
+      balance = widget.balance;
+    }
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width * 1.0,
         height: MediaQuery.of(context).size.height * 1.0,
-        color: AppTheme.colors.background,
+        color: Colors.grey[200],
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(
               children: [
-                CBButton(),
-                Text('balance amount: $balance'),
-                Text('insert graphs'),
                 Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: Column(children: [Text('Examp;e')]),
-                ),
-                FutureBuilder<DocumentSnapshot>(
-                  future: widget.paymentRef.get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    }
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
-                    if (!snapshot.hasData || snapshot.data == null) {
-                      return Text('No data available');
-                    }
-                    Map<String, dynamic>? data =
-                        snapshot.data!.data() as Map<String, dynamic>?;
-
-                    if (data == null || !data.containsKey('saveCat')) {
-                      return Text('Goal not found');
-                    }
-
-                    String goal = data['saveCat'];
-                    List<dynamic> payments = data['payments'];
-
-                    return Column(
-                      children: [
-                        Text('Goal: $goal'),
-                        SizedBox(height: 20),
-                        Text('Payments:'),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: payments.length,
-                          itemBuilder: (context, index) {
-                            Map<String, dynamic> payment = payments[index];
-                            double amount = payment['amount'];
-                            Timestamp date = payment['date'];
-                            return ListTile(
-                              title: Text('Amount: $amount'),
-                              subtitle: Text('Date: $date'),
-                            );
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      CBButton(),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ManageSavings()));
                           },
+                          child: Text('fuck')),
+                      FutureBuilder<Map<int, double>>(
+                        future: _calculateTotalAmountsPerMonth(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (!snapshot.hasData) {
+                            return Text('No data available');
+                          }
+
+                          return Column(
+                            children: [
+                              Text('Insert graphs'),
+                              SizedBox(height: 20),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                height: 300, // Adjust the height as needed
+                                child: buildBarChart(snapshot.data!),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      Text('Balance amount: ${balance ?? 0.0}'),
+                      SizedBox(height: 20),
+                      Text('Insert graphs'),
+                      SizedBox(height: 20),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        child: Column(
+                          children: [Text('Example')],
                         ),
-                        SizedBox(height: 20),
-                        Text('Notifications:'),
-                        Column(
-                          children: notifications.map((notification) {
-                            DateTime currentDate = DateTime.now();
-                            return ListTile(
-                              title: Text(notification),
-                              subtitle: Text('Date: ${currentDate.toString()}'),
-                              trailing: IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () {
-                                  deleteNotification(notification);
+                      ),
+                      FutureBuilder<DocumentSnapshot>(
+                        future: widget.paymentRef.get(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          }
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          }
+                          if (!snapshot.hasData || snapshot.data == null) {
+                            return Text('No data available');
+                          }
+                          Map<String, dynamic>? data =
+                              snapshot.data!.data() as Map<String, dynamic>?;
+
+                          if (data == null || !data.containsKey('saveCat')) {
+                            return Text('Goal not found');
+                          }
+
+                          String goal = data['saveCat'];
+                          List<dynamic> payments = data['payments'];
+
+                          return Column(
+                            children: [
+                              Text('Goal: $goal'),
+                              SizedBox(height: 20),
+                              Text('Payments:'),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: payments.length,
+                                itemBuilder: (context, index) {
+                                  Map<String, dynamic> payment =
+                                      payments[index];
+                                  double amount = payment['amount'];
+                                  Timestamp date = payment['date'];
+                                  return ListTile(
+                                    title: Text('Amount: $amount'),
+                                    subtitle: Text('Date: $date'),
+                                  );
                                 },
                               ),
-                            );
-                          }).toList(),
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            openPaymentAmountDialog();
-                          },
-                          child: Text('Add Payment'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            openWithdrawalAmountDialog();
-                          },
-                          child: Text('Add Withdrawl'),
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              deleteRecord(context);
-                            },
-                            child: Text('Delete'))
-                      ],
-                    );
-                  },
+                              SizedBox(height: 20),
+                              Text('Notifications:'),
+                              Column(
+                                children: notifications.map((notification) {
+                                  DateTime currentDate = DateTime.now();
+                                  return ListTile(
+                                    title: Text(notification),
+                                    subtitle:
+                                        Text('Date: ${currentDate.toString()}'),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () {
+                                        deleteNotification(notification);
+                                      },
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                              SizedBox(height: 20),
+                              ElevatedButton(
+                                onPressed: () {
+                                  openPaymentAmountDialog();
+                                },
+                                child: Text('Add Payment'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  openWithdrawalAmountDialog();
+                                },
+                                child: Text('Add Withdrawal'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  deleteRecord(context);
+                                },
+                                child: Text('Delete'),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -234,46 +330,12 @@ class _SavingsCardState extends State<SavingsCard> {
             setState(() {
               notifications = updatedNotifications;
             });
+            updateBalance();
+            if (widget.onUpdateTotalAmount != null) {
+              widget.onUpdateTotalAmount!();
+            }
           }).catchError((error) {
             print('Failed to add payment: $error');
-          });
-        } else {
-          print('Payments data not found');
-        }
-      } else {
-        print('Document does not exist');
-      }
-    }).catchError((error) {
-      print('Failed to get document: $error');
-    });
-  }
-
-  void addWithdrawal(double withdrawlAmount) {
-    widget.paymentRef.get().then((snapshot) {
-      if (snapshot.exists) {
-        Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-
-        if (data != null && data.containsKey('payments')) {
-          List<dynamic> updatedPayments = data['payments'];
-
-          updatedPayments
-              .add({'amount': -withdrawlAmount, 'date': DateTime.now()});
-
-          List<String> updatedNotifications = [];
-          updatedNotifications.addAll(notifications);
-          updatedNotifications.add(
-              'You have withdrawn \$${withdrawlAmount.toStringAsFixed(2)}');
-
-          widget.paymentRef.update({
-            'payments': updatedPayments,
-            'notifications': updatedNotifications,
-          }).then((_) {
-            print('Withdrawal added successfully');
-            setState(() {
-              notifications = updatedNotifications;
-            });
-          }).catchError((error) {
-            print('Failed to add withdrawal: $error');
           });
         } else {
           print('Payments data not found');
@@ -327,6 +389,49 @@ class _SavingsCardState extends State<SavingsCard> {
     );
   }
 
+  void addWithdrawal(double withdrawalAmount) {
+    widget.paymentRef.get().then((snapshot) {
+      if (snapshot.exists) {
+        Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+
+        if (data != null && data.containsKey('payments')) {
+          List<dynamic> updatedPayments = data['payments'];
+
+          updatedPayments
+              .add({'amount': -withdrawalAmount, 'date': DateTime.now()});
+
+          List<String> updatedNotifications = [];
+          updatedNotifications.addAll(notifications);
+
+          updatedNotifications.add(
+              'You have withdrawn \$${withdrawalAmount.toStringAsFixed(2)}');
+
+          widget.paymentRef.update({
+            'payments': updatedPayments,
+            'notifications': updatedNotifications,
+          }).then((_) {
+            print('Withdrawal added successfully');
+            setState(() {
+              notifications = updatedNotifications;
+            });
+            updateBalance();
+            if (widget.onUpdateTotalAmount != null) {
+              widget.onUpdateTotalAmount!();
+            }
+          }).catchError((error) {
+            print('Failed to add withdrawal: $error');
+          });
+        } else {
+          print('Payments data not found');
+        }
+      } else {
+        print('Document does not exist');
+      }
+    }).catchError((error) {
+      print('Failed to get document: $error');
+    });
+  }
+
   void deleteNotification(String notification) {
     List<String> updatedNotifications = [];
     updatedNotifications.addAll(notifications);
@@ -361,8 +466,11 @@ class _SavingsCardState extends State<SavingsCard> {
               onPressed: () {
                 widget.paymentRef.delete().then((_) {
                   print('Record deleted successfully');
-                  Navigator.of(context).pop(); // Close the confirmation dialog
-                  Navigator.of(context).pop(); // Go back to the previous page
+                  if (widget.onUpdateTotalAmount != null) {
+                    widget.onUpdateTotalAmount!();
+                  }
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
                 }).catchError((error) {
                   print('Failed to delete record: $error');
                 });
@@ -373,4 +481,80 @@ class _SavingsCardState extends State<SavingsCard> {
       },
     );
   }
+}
+
+Widget buildBarChart(Map<int, double> amountsPerMonth) {
+  final monthNames = [
+    '', // Empty string as a placeholder for index 0
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
+  // Calculate the minimum and maximum values
+  double minAmount = double.infinity;
+  double maxAmount = double.negativeInfinity;
+  for (final amount in amountsPerMonth.values) {
+    if (amount < minAmount) {
+      minAmount = amount;
+    }
+    if (amount > maxAmount) {
+      maxAmount = amount;
+    }
+  }
+
+  final maxY = (maxAmount ~/ 100 + 1) * 100;
+  final minY = (minAmount ~/ 100 - 1) * 100;
+
+  return BarChart(
+    BarChartData(
+      alignment: BarChartAlignment.spaceEvenly,
+      maxY: maxY.toDouble(),
+      minY: minY.toDouble(),
+      barGroups: List.generate(12, (index) {
+        final month = index + 1;
+        final amount = amountsPerMonth[month] ?? 0.0;
+        return BarChartGroupData(
+          x: month,
+          barRods: [
+            BarChartRodData(
+              y: amount,
+              colors: [Colors.orange],
+            ),
+          ],
+        );
+      }),
+      titlesData: FlTitlesData(
+        show: true,
+        bottomTitles: SideTitles(
+          showTitles: true,
+          getTextStyles: (value) => TextStyle(color: Colors.black),
+          margin: 8,
+          getTitles: (double value) {
+            final monthIndex = value.toInt();
+            if (monthIndex > 0 && monthIndex <= 12) {
+              return monthNames[monthIndex];
+            }
+            return '';
+          },
+        ),
+        leftTitles: SideTitles(
+          showTitles: true,
+          getTextStyles: (value) => TextStyle(color: Colors.black),
+          margin: 8,
+          reservedSize: 40,
+          interval: 100,
+          getTitles: (double value) {
+            if (value % 100 == 0) {
+              return value.toInt().toString();
+            }
+            return '';
+          },
+        ),
+      ),
+      borderData: FlBorderData(
+        show: true,
+        border: Border.all(color: Colors.grey),
+      ),
+    ),
+  );
 }

@@ -13,12 +13,36 @@ class ManageSavings extends StatefulWidget {
 
 class _ManageSavingsState extends State<ManageSavings> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  double totalAmount = 0.0;
+
+//total Savings
+  Future<double> calculateTotalAmount() async {
+    double totalAmount = 0;
+
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .collection('userSaveDetails')
+        .get();
+
+    List<DocumentSnapshot> documents = querySnapshot.docs;
+
+    for (var document in documents) {
+      List<dynamic> payments = document['payments'];
+      for (var payment in payments) {
+        double amount = payment['amount'];
+        totalAmount += amount;
+      }
+    }
+
+    return totalAmount;
+  }
 
   // Calculation of payments
-  double calculateTotal(List<Map<String, dynamic>> payments) {
+  double calculateTotal(List<dynamic> payments) {
     double total = 0;
     for (var payment in payments) {
-      double amount = payment['amount'];
+      double amount = payment['amount'] as double;
       total += amount;
     }
     return total;
@@ -48,12 +72,17 @@ class _ManageSavingsState extends State<ManageSavings> {
         if (paymentYear == year) {
           if (amountsPerMonth.containsKey(paymentMonth)) {
             final currentAmount = amountsPerMonth[paymentMonth] ?? 0;
-            amountsPerMonth[paymentMonth] = (currentAmount + amount)!;
+            amountsPerMonth[paymentMonth] = (currentAmount + amount);
           } else {
             amountsPerMonth[paymentMonth] = amount;
           }
         }
       }
+
+      totalAmount += calculateTotal(payments);
+      totalAmount = calculateTotal(payments); // Assign total amount
+
+      // Add to total amount
     }
 
     // Calculate total amounts per month
@@ -69,6 +98,7 @@ class _ManageSavingsState extends State<ManageSavings> {
   void initState() {
     super.initState();
     initPage();
+    // calculateTotalAmount();
   }
 
   void initPage() async {
@@ -78,6 +108,15 @@ class _ManageSavingsState extends State<ManageSavings> {
     // Print the total amounts per month
     amountsPerMonth.forEach((month, totalAmount) {
       print('Month: $month, Total Amount: $totalAmount');
+    });
+
+    updateTotalAmount(); // Call the function here to update the total amount
+  }
+
+  void updateTotalAmount() async {
+    double total = await calculateTotalAmount();
+    setState(() {
+      totalAmount = total;
     });
   }
 
@@ -104,6 +143,8 @@ class _ManageSavingsState extends State<ManageSavings> {
                         TextAlign.left,
                       ),
                       MS24(),
+
+                      Text('Total Amount: $totalAmount'),
 
                       Container(
                         height: 300,
@@ -230,6 +271,10 @@ class _ManageSavingsState extends State<ManageSavings> {
                                                           .doc(documents[index]
                                                               .id),
                                                       paymentIndex: index,
+                                                      onUpdateTotalAmount:
+                                                          updateTotalAmount,
+                                                      //onUpdateTotalAmount:
+                                                      // updateTotalAmount, // Pass the callback function here
                                                     ),
                                                   ),
                                                 );
@@ -295,6 +340,8 @@ class _ManageSavingsState extends State<ManageSavings> {
                                               .collection('userSaveDetails')
                                               .doc(documents[index].id),
                                           paymentIndex: index,
+                                          //onUpdateTotalAmount:
+                                          //  updateTotalAmount, // Pass the callback function here
                                         ),
                                       ),
                                     );
@@ -356,9 +403,26 @@ class _ManageSavingsState extends State<ManageSavings> {
 }
 
 Widget buildBarChart(Map<int, double> amountsPerMonth) {
-  final maxAmount =
-      amountsPerMonth.values.reduce((max, value) => max > value ? max : value);
+  final monthNames = [
+    '', // Empty string as a placeholder for index 0
+    'J', 'F', 'M', 'A', 'M', 'J',
+    'J', 'A', 'S', 'O', 'N', 'D'
+  ];
+
+  // Calculate the minimum and maximum values
+  double minAmount = double.infinity;
+  double maxAmount = double.negativeInfinity;
+  for (final amount in amountsPerMonth.values) {
+    if (amount < minAmount) {
+      minAmount = amount;
+    }
+    if (amount > maxAmount) {
+      maxAmount = amount;
+    }
+  }
+
   final maxY = (maxAmount ~/ 100 + 1) * 100;
+  final minY = (minAmount ~/ 100 - 1) * 100;
 
   return Container(
     height: 300,
@@ -367,6 +431,7 @@ Widget buildBarChart(Map<int, double> amountsPerMonth) {
       BarChartData(
         alignment: BarChartAlignment.spaceEvenly,
         maxY: maxY.toDouble(),
+        minY: minY.toDouble(),
         barGroups: List.generate(12, (index) {
           final month = index + 1;
           final amount = amountsPerMonth[month] ?? 0.0;
@@ -387,7 +452,11 @@ Widget buildBarChart(Map<int, double> amountsPerMonth) {
             getTextStyles: (value) => TextStyle(color: Colors.black),
             margin: 8,
             getTitles: (double value) {
-              return value.toInt().toString();
+              final monthIndex = value.toInt();
+              if (monthIndex > 0 && monthIndex <= 12) {
+                return monthNames[monthIndex];
+              }
+              return '';
             },
           ),
           leftTitles: SideTitles(
