@@ -101,3 +101,53 @@ class _CustomNavigationState extends State<CustomNavigation> {
         ));
   }
 }
+
+//modified to specifiy route
+class MCBButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  MCBButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: Row(
+        children: [
+          Icon(
+            Icons.arrow_back,
+            size: 14,
+          ),
+          SizedBox(
+            width: 4,
+          ),
+          PLS10('Back', Colors.black, 1)
+        ],
+      ),
+      onTap: onPressed,
+    );
+  }
+}
+
+//the new tracking heading
+
+class UPTrackingHeading extends StatelessWidget {
+  final Color color;
+  final String heading;
+  final String description;
+  final VoidCallback onPressed;
+
+  UPTrackingHeading(this.color, this.heading, this.description, this.onPressed);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.90,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SS36(),
+        MCBButton(onPressed: onPressed),
+        SS16(),
+        BBLM14(heading, color, 1),
+        BB10(description, color, 1, TextAlign.left),
+      ]),
+    );
+  }
+}

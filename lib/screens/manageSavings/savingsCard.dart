@@ -2,6 +2,7 @@ import 'package:astute_components/astute_components.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:prod_mode/internalComponents.dart';
 import 'package:prod_mode/screens/manageSavings/manageSavings.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -257,6 +258,12 @@ class _SavingsCardState extends State<SavingsCard> {
                     ],
                   ),
                 ),
+
+                //the navigation bar
+
+                CustomNavigation(
+                  isHome: false,
+                )
               ],
             ),
           ),
@@ -486,8 +493,8 @@ class _SavingsCardState extends State<SavingsCard> {
 Widget buildBarChart(Map<int, double> amountsPerMonth) {
   final monthNames = [
     '', // Empty string as a placeholder for index 0
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    'J', 'F', 'M', 'A', 'M', 'J',
+    'J', 'A', 'S', 'O', 'N', 'D'
   ];
 
   // Calculate the minimum and maximum values

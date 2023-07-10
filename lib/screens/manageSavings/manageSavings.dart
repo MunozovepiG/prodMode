@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:prod_mode/homeFlow/homePage.dart';
+import 'package:prod_mode/internalComponents.dart';
 import 'package:prod_mode/screens/manageSavings/savingsCard.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -136,41 +138,92 @@ class _ManageSavingsState extends State<ManageSavings> {
                   child: Column(
                     children: [
                       SS36(),
-                      TrackingHeading(
-                        AppTheme.colors.orange500,
-                        'Keep',
-                        'Here you can protect your money by managing your savings.',
-                        TextAlign.left,
-                      ),
+                      UPTrackingHeading(AppTheme.colors.orange500, 'Keep',
+                          'Here you can protect your money by managing your savings.',
+                          () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HomePage()));
+                      }),
                       MS24(),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 400,
+                            width: MediaQuery.of(context).size.width * 0.90,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.55),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0x19000000),
+                                  blurRadius: 7.58,
+                                  offset: Offset(0, 1.52),
+                                  spreadRadius: 0,
+                                )
+                              ],
+                            ),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    //the chart facts
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 16.0),
+                                      child: BR10('Total savings', Colors.black,
+                                          1, TextAlign.left),
+                                    ),
+                                    SizedBox(
+                                      height: 4,
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 16.0),
+                                      child: BBLM14(
+                                        '${totalAmount}',
+                                        Colors.black,
+                                        1,
+                                      ),
+                                    ),
 
-                      Text('Total Amount: $totalAmount'),
+                                    MS24(),
+                                    Container(
+                                      height: 300,
+                                      width:
+                                          MediaQuery.of(context).size.width * 1,
+                                      child: FutureBuilder<Map<int, double>>(
+                                        future:
+                                            calculateTotalAmountsPerMonth(2023),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return Center(
+                                                child:
+                                                    CircularProgressIndicator());
+                                          } else if (snapshot.hasError) {
+                                            return Text(
+                                                'Error: ${snapshot.error}');
+                                          } else if (!snapshot.hasData) {
+                                            return Text('No data available');
+                                          }
 
-                      Container(
-                        height: 300,
-                        child: FutureBuilder<Map<int, double>>(
-                          future: calculateTotalAmountsPerMonth(2023),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else if (!snapshot.hasData) {
-                              return Text('No data available');
-                            }
-
-                            return buildBarChart(snapshot.data!);
-                          },
-                        ),
+                                          return buildBarChart(snapshot.data!);
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      TextButton(
-                        onPressed: () {
-                          addTestData();
-                        },
-                        child: Text('Delete button'),
-                      ),
-                      Text('Graph to be inserted'),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -179,185 +232,193 @@ class _ManageSavingsState extends State<ManageSavings> {
                           }),
                         ],
                       ),
-                      Container(
-                        height: 450,
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(FirebaseAuth.instance.currentUser?.uid)
-                              .collection('userSaveDetails')
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            }
-
-                            if (!snapshot.hasData) {
-                              return Text('No data available');
-                            }
-
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            }
-
-                            List<DocumentSnapshot> documents =
-                                snapshot.data!.docs;
-
-                            return ListView.builder(
-                              itemCount: documents.length,
-                              itemBuilder: (context, index) {
-                                Map<String, dynamic> data = documents[index]
-                                    .data() as Map<String, dynamic>;
-                                String saveCat = data?['saveCat'];
-                                double contributions = data?['contributions'];
-                                int months = data?['months'];
-
-                                List<Map<String, dynamic>> payments = [];
-
-                                if (data?['payments'] is List<dynamic>) {
-                                  payments =
-                                      (data?['payments'] as List<dynamic>)
-                                          .cast<Map<String, dynamic>>();
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 450,
+                            child: StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(FirebaseAuth.instance.currentUser?.uid)
+                                  .collection('userSaveDetails')
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
                                 }
 
-                                double totalAmount = calculateTotal(payments);
+                                if (!snapshot.hasData) {
+                                  return Text('No data available');
+                                }
 
-                                return InkWell(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 24.0),
-                                    child: Container(
-                                      decoration: ShapeDecoration(
-                                        color: Color(0xFFFF9958),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                      child: ListTile(
-                                        title: Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 4.0,
-                                            right: 4.0,
-                                            top: 8.0,
-                                            bottom: 4.0,
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                }
+
+                                List<DocumentSnapshot> documents =
+                                    snapshot.data!.docs;
+
+                                return ListView.builder(
+                                  itemCount: documents.length,
+                                  itemBuilder: (context, index) {
+                                    Map<String, dynamic> data = documents[index]
+                                        .data() as Map<String, dynamic>;
+                                    String saveCat = data?['saveCat'];
+                                    double contributions =
+                                        data?['contributions'];
+                                    int months = data?['months'];
+
+                                    List<Map<String, dynamic>> payments = [];
+
+                                    if (data?['payments'] is List<dynamic>) {
+                                      payments =
+                                          (data?['payments'] as List<dynamic>)
+                                              .cast<Map<String, dynamic>>();
+                                    }
+
+                                    double totalAmount =
+                                        calculateTotal(payments);
+
+                                    return InkWell(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 24.0),
+                                        child: Container(
+                                          decoration: ShapeDecoration(
+                                            color: Color(0xFFFF9958),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              BBRM14(
-                                                '$contributions monthly',
-                                                AppTheme.colors.white,
-                                                1,
-                                                TextAlign.left,
+                                          child: ListTile(
+                                            title: Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 4.0,
+                                                right: 4.0,
+                                                top: 8.0,
+                                                bottom: 4.0,
                                               ),
-                                              ArrowIButton(() {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        SavingsCard(
-                                                      paymentRef: FirebaseFirestore
-                                                          .instance
-                                                          .collection('users')
-                                                          .doc(FirebaseAuth
-                                                              .instance
-                                                              .currentUser
-                                                              ?.uid)
-                                                          .collection(
-                                                              'userSaveDetails')
-                                                          .doc(documents[index]
-                                                              .id),
-                                                      paymentIndex: index,
-                                                      onUpdateTotalAmount:
-                                                          updateTotalAmount,
-                                                      //onUpdateTotalAmount:
-                                                      // updateTotalAmount, // Pass the callback function here
-                                                    ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  BBRM14(
+                                                    '$contributions monthly',
+                                                    AppTheme.colors.white,
+                                                    1,
+                                                    TextAlign.left,
                                                   ),
-                                                );
-                                              }),
-                                            ],
-                                          ),
-                                        ),
-                                        subtitle: Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 4.0,
-                                            right: 4.0,
-                                            bottom: 8.0,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              BBLM14(
-                                                '$saveCat',
-                                                AppTheme.colors.white,
-                                                1,
+                                                  ArrowIButton(() {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            SavingsCard(
+                                                          paymentRef: FirebaseFirestore
+                                                              .instance
+                                                              .collection(
+                                                                  'users')
+                                                              .doc(FirebaseAuth
+                                                                  .instance
+                                                                  .currentUser
+                                                                  ?.uid)
+                                                              .collection(
+                                                                  'userSaveDetails')
+                                                              .doc(documents[
+                                                                      index]
+                                                                  .id),
+                                                          paymentIndex: index,
+                                                          onUpdateTotalAmount:
+                                                              updateTotalAmount,
+                                                          //onUpdateTotalAmount:
+                                                          // updateTotalAmount, // Pass the callback function here
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }),
+                                                ],
                                               ),
-                                              SizedBox(height: 4),
-                                              BBBS12(
-                                                'Amount saved: $totalAmount',
-                                                AppTheme.colors.white,
-                                                1,
-                                                TextAlign.left,
+                                            ),
+                                            subtitle: Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 4.0,
+                                                right: 4.0,
+                                                bottom: 8.0,
                                               ),
-                                              SizedBox(height: 4),
-                                              BBRS12(
-                                                '$months months to get there',
-                                                AppTheme.colors.white,
-                                                1,
-                                                TextAlign.left,
-                                              ),
-                                              ...payments
-                                                  .map<Widget>((payment) {
-                                                double amount =
-                                                    payment['amount'];
-                                                Timestamp date =
-                                                    payment['date'];
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  BBLM14(
+                                                    '$saveCat',
+                                                    AppTheme.colors.white,
+                                                    1,
+                                                  ),
+                                                  SizedBox(height: 4),
+                                                  BBBS12(
+                                                    'Amount saved: $totalAmount',
+                                                    AppTheme.colors.white,
+                                                    1,
+                                                    TextAlign.left,
+                                                  ),
+                                                  SizedBox(height: 4),
+                                                  BBRS12(
+                                                    '$months months to get there',
+                                                    AppTheme.colors.white,
+                                                    1,
+                                                    TextAlign.left,
+                                                  ),
+                                                  ...payments
+                                                      .map<Widget>((payment) {
+                                                    double amount =
+                                                        payment['amount'];
+                                                    Timestamp date =
+                                                        payment['date'];
 
-                                                return Column(
-                                                  children: [],
-                                                );
-                                              }).toList(),
-                                            ],
+                                                    return Column(
+                                                      children: [],
+                                                    );
+                                                  }).toList(),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => SavingsCard(
-                                          paymentRef: FirebaseFirestore.instance
-                                              .collection('users')
-                                              .doc(FirebaseAuth
-                                                  .instance.currentUser?.uid)
-                                              .collection('userSaveDetails')
-                                              .doc(documents[index].id),
-                                          paymentIndex: index,
-                                          //onUpdateTotalAmount:
-                                          //  updateTotalAmount, // Pass the callback function here
-                                        ),
-                                      ),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => SavingsCard(
+                                              paymentRef: FirebaseFirestore
+                                                  .instance
+                                                  .collection('users')
+                                                  .doc(FirebaseAuth.instance
+                                                      .currentUser?.uid)
+                                                  .collection('userSaveDetails')
+                                                  .doc(documents[index].id),
+                                              paymentIndex: index,
+                                              //onUpdateTotalAmount:
+                                              //  updateTotalAmount, // Pass the callback function here
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     );
                                   },
                                 );
                               },
-                            );
-                          },
-                        ),
+                            ),
+                          ),
+                        ],
                       ),
-
-                      //to be deleted
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: Text('Group Payments'),
-                      ),
+                      CustomNavigation(
+                        isHome: false,
+                      )
                     ],
                   ),
                 ),
@@ -426,7 +487,6 @@ Widget buildBarChart(Map<int, double> amountsPerMonth) {
 
   return Container(
     height: 300,
-    padding: EdgeInsets.all(16),
     child: BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceEvenly,
@@ -440,7 +500,7 @@ Widget buildBarChart(Map<int, double> amountsPerMonth) {
             barRods: [
               BarChartRodData(
                 y: amount,
-                colors: [Colors.orange],
+                colors: [Color(0xFFFE6E04)],
               ),
             ],
           );
