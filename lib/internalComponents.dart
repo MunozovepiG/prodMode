@@ -5,6 +5,7 @@ import 'package:astute_components/astute_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:prod_mode/homeFlow/homePage.dart';
 
 class RowLabel extends StatelessWidget {
   String description;
@@ -49,16 +50,22 @@ class TwoColumnLabel extends StatelessWidget {
 class CustomNavigation extends StatefulWidget {
   bool? isHome;
 
-  CustomNavigation({this.isHome});
+  CustomNavigation({
+    this.isHome,
+  });
 
   @override
-  State<CustomNavigation> createState() => _CustomNavigationState(isHome);
+  State<CustomNavigation> createState() => _CustomNavigationState(
+        isHome,
+      );
 }
 
 class _CustomNavigationState extends State<CustomNavigation> {
   bool? isHome;
 
-  _CustomNavigationState(this.isHome);
+  _CustomNavigationState(
+    this.isHome,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +99,17 @@ class _CustomNavigationState extends State<CustomNavigation> {
                     SizedBox(
                       width: 4,
                     ),
-                    BBBS12('Home', AppTheme.colors.blue500, 1, TextAlign.left),
+                    InkWell(
+                        child: BBBS12(
+                            'Home', AppTheme.colors.blue500, 1, TextAlign.left),
+                        onTap: () {
+                          (isHome!)
+                              ? null
+                              : Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomePage()));
+                        })
                   ],
                 )
               ],
@@ -145,6 +162,41 @@ class UPTrackingHeading extends StatelessWidget {
         SS36(),
         MCBButton(onPressed: onPressed),
         SS16(),
+        BBLM14(heading, color, 1),
+        BB10(description, color, 1, TextAlign.left),
+      ]),
+    );
+  }
+}
+
+class TrackingHeadingDelete extends StatelessWidget {
+  final Color color;
+  final String heading;
+  final String description;
+  final VoidCallback onPressed;
+  final VoidCallback deleteFunction;
+
+  TrackingHeadingDelete(this.color, this.heading, this.description,
+      this.onPressed, this.deleteFunction);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.90,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SS36(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            MCBButton(onPressed: onPressed),
+            IconButton(
+                onPressed: deleteFunction,
+                icon: Icon(
+                  Icons.delete_outline,
+                  size: 18,
+                ))
+          ],
+        ),
+        SS8(),
         BBLM14(heading, color, 1),
         BB10(description, color, 1, TextAlign.left),
       ]),

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:prod_mode/internalComponents.dart';
 import 'package:prod_mode/screens/manageSavings/manageSavings.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 
 class SavingsCard extends StatefulWidget {
   final DocumentReference paymentRef;
@@ -128,50 +129,26 @@ class _SavingsCardState extends State<SavingsCard> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      CBButton(),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ManageSavings()));
-                          },
-                          child: Text('fuck')),
-                      FutureBuilder<Map<int, double>>(
-                        future: _calculateTotalAmountsPerMonth(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else if (!snapshot.hasData) {
-                            return Text('No data available');
+                      TrackingHeadingDelete(AppTheme.colors.orange500, "Keep",
+                          'Here you can protect your money by managing your savings.',
+                          () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ManageSavings()));
+                      }, () {
+                        widget.paymentRef.delete().then((_) {
+                          print('Record deleted successfully');
+                          if (widget.onUpdateTotalAmount != null) {
+                            widget.onUpdateTotalAmount!();
                           }
+                          Navigator.of(context).pop();
+                        }).catchError((error) {
+                          print('Failed to delete record: $error');
+                        });
+                      }),
 
-                          return Column(
-                            children: [
-                              Text('Insert graphs'),
-                              SizedBox(height: 20),
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                height: 300, // Adjust the height as needed
-                                child: buildBarChart(snapshot.data!),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      Text('Balance amount: ${balance ?? 0.0}'),
-                      SizedBox(height: 20),
-                      Text('Insert graphs'),
-                      SizedBox(height: 20),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        child: Column(
-                          children: [Text('Example')],
-                        ),
-                      ),
+                      // the bar chart
                       FutureBuilder<DocumentSnapshot>(
                         future: widget.paymentRef.get(),
                         builder: (context, snapshot) {
@@ -194,28 +171,135 @@ class _SavingsCardState extends State<SavingsCard> {
 
                           String goal = data['saveCat'];
                           List<dynamic> payments = data['payments'];
+                          Timestamp startDate = data['startDate'];
+                          int months = data['months'];
+                          double contributions = data['contributions'];
+                          double targetAmount = data['targetAmount'];
+                          DateTime currentDate = DateTime.now();
+                          DateTime start = startDate.toDate();
+                          Duration difference = currentDate.difference(start);
+                          int period = (difference.inDays! / 30).ceil();
+
+                          double? expectedAmount = period * contributions;
+                          String? status;
+                          String? track;
+
+                          if (start.isBefore(DateTime.now())) {
+                            if (expectedAmount == balance) {
+                              track = 'on track';
+                            } else if (expectedAmount < balance!) {
+                              track = 'ahead';
+                            } else {
+                              track = 'behind';
+                            }
+                          } else {
+                            track = 'not started';
+                          }
 
                           return Column(
                             children: [
-                              Text('Goal: $goal'),
-                              SizedBox(height: 20),
-                              Text('Payments:'),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: payments.length,
-                                itemBuilder: (context, index) {
-                                  Map<String, dynamic> payment =
-                                      payments[index];
-                                  double amount = payment['amount'];
-                                  Timestamp date = payment['date'];
-                                  return ListTile(
-                                    title: Text('Amount: $amount'),
-                                    subtitle: Text('Date: $date'),
+                              FutureBuilder<Map<int, double>>(
+                                future: _calculateTotalAmountsPerMonth(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  } else if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  } else if (!snapshot.hasData) {
+                                    return Text('No data available');
+                                  }
+
+                                  return Column(
+                                    children: [
+                                      MS24(),
+
+                                      // the bar chart
+                                      Container(
+                                        height: 350,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.90,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.55),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Color(0x19000000),
+                                              blurRadius: 7.58,
+                                              offset: Offset(0, 1.52),
+                                              spreadRadius: 0,
+                                            )
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  //the chart facts
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 16.0),
+                                                    child: Row(
+                                                      children: [
+                                                        BR10(
+                                                            '${goal} savings',
+                                                            Colors.black,
+                                                            1,
+                                                            TextAlign.left),
+                                                        Text('$track')
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 4,
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 16.0),
+                                                    child: BBLM14(
+                                                      '${balance}',
+                                                      Colors.black,
+                                                      1,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 24,
+                                                  ),
+                                                  Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.9,
+                                                    // Adjust the height as needed
+                                                    child: buildBarChart(
+                                                        snapshot.data!),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   );
                                 },
                               ),
                               SizedBox(height: 20),
-                              Text('Notifications:'),
+                              BBLM14('Here are the stats', Colors.black, 1),
                               Column(
                                 children: notifications.map((notification) {
                                   DateTime currentDate = DateTime.now();
@@ -510,57 +594,61 @@ Widget buildBarChart(Map<int, double> amountsPerMonth) {
   }
 
   final maxY = (maxAmount ~/ 100 + 1) * 100;
-  final minY = (minAmount ~/ 100 - 1) * 100;
+  final minY = (minAmount) * 100;
+  //final minY = (minAmount);
 
-  return BarChart(
-    BarChartData(
-      alignment: BarChartAlignment.spaceEvenly,
-      maxY: maxY.toDouble(),
-      minY: minY.toDouble(),
-      barGroups: List.generate(12, (index) {
-        final month = index + 1;
-        final amount = amountsPerMonth[month] ?? 0.0;
-        return BarChartGroupData(
-          x: month,
-          barRods: [
-            BarChartRodData(
-              y: amount,
-              colors: [Colors.orange],
-            ),
-          ],
-        );
-      }),
-      titlesData: FlTitlesData(
-        show: true,
-        bottomTitles: SideTitles(
-          showTitles: true,
-          getTextStyles: (value) => TextStyle(color: Colors.black),
-          margin: 8,
-          getTitles: (double value) {
-            final monthIndex = value.toInt();
-            if (monthIndex > 0 && monthIndex <= 12) {
-              return monthNames[monthIndex];
-            }
-            return '';
-          },
+  return Container(
+    height: 250,
+    child: BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceEvenly,
+        maxY: maxY.toDouble(),
+        minY: minY.toDouble(),
+        barGroups: List.generate(12, (index) {
+          final month = index + 1;
+          final amount = amountsPerMonth[month] ?? 0.0;
+          return BarChartGroupData(
+            x: month,
+            barRods: [
+              BarChartRodData(
+                y: amount,
+                colors: [Colors.orange],
+              ),
+            ],
+          );
+        }),
+        titlesData: FlTitlesData(
+          show: true,
+          bottomTitles: SideTitles(
+            showTitles: true,
+            getTextStyles: (value) => TextStyle(color: Colors.black),
+            margin: 8,
+            getTitles: (double value) {
+              final monthIndex = value.toInt();
+              if (monthIndex > 0 && monthIndex <= 12) {
+                return monthNames[monthIndex];
+              }
+              return '';
+            },
+          ),
+          leftTitles: SideTitles(
+            showTitles: true,
+            getTextStyles: (value) => TextStyle(color: Colors.black),
+            margin: 8,
+            reservedSize: 40,
+            interval: 100,
+            getTitles: (double value) {
+              if (value % 100 == 0) {
+                return value.toInt().toString();
+              }
+              return '';
+            },
+          ),
         ),
-        leftTitles: SideTitles(
-          showTitles: true,
-          getTextStyles: (value) => TextStyle(color: Colors.black),
-          margin: 8,
-          reservedSize: 40,
-          interval: 100,
-          getTitles: (double value) {
-            if (value % 100 == 0) {
-              return value.toInt().toString();
-            }
-            return '';
-          },
+        borderData: FlBorderData(
+          show: true,
+          border: Border.all(color: Colors.grey),
         ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: Colors.grey),
       ),
     ),
   );

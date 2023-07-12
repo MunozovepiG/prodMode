@@ -510,7 +510,7 @@ class _HomePageState extends State<HomePage> {
                             ),
 
                             //the navigation bar
-                            CustomNavigation(isHome: true),
+                            CustomNavigation(isHome: true)
                           ],
                         ),
                       ),
