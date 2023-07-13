@@ -103,6 +103,24 @@ class _SavingsCardState extends State<SavingsCard> {
       }
     }
 
+    double maxAmount = 0;
+    double targetAmount = 1000; // Set your target amount here
+
+    if (widget.balance != null) {
+      if (widget.balance! > 0) {
+        maxAmount = widget.balance!;
+      } else {
+        maxAmount = targetAmount;
+      }
+    } else {
+      maxAmount = targetAmount;
+    }
+
+    final interval = maxAmount / 10;
+    final minY = maxAmount >= targetAmount ? 0 : maxAmount;
+    final maxY =
+        maxAmount >= targetAmount ? targetAmount : maxAmount + interval;
+
     return amountsPerMonth;
   }
 
@@ -484,81 +502,96 @@ class _SavingsCardState extends State<SavingsCard> {
         );
       },
     );
-  }
-}
 
-Widget buildBarChart(Map<int, double> amountsPerMonth) {
-  final monthNames = [
-    '', // Empty string as a placeholder for index 0
-    'J', 'F', 'M', 'A', 'M', 'J',
-    'J', 'A', 'S', 'O', 'N', 'D'
-  ];
+    Widget buildBarChart(Map<int, double> amountsPerMonth) {
+      final monthNames = [
+        '', // Empty string as a placeholder for index 0
+        'J', 'F', 'M', 'A', 'M', 'J',
+        'J', 'A', 'S', 'O', 'N', 'D'
+      ];
 
-  // Calculate the minimum and maximum values
-  double minAmount = double.infinity;
-  double maxAmount = double.negativeInfinity;
-  for (final amount in amountsPerMonth.values) {
-    if (amount < minAmount) {
-      minAmount = amount;
-    }
-    if (amount > maxAmount) {
-      maxAmount = amount;
-    }
-  }
+      // Calculate the minimum and maximum values
+      double minAmount = double.infinity;
+      double maxAmount = double.negativeInfinity;
+      for (final amount in amountsPerMonth.values) {
+        if (amount < minAmount) {
+          minAmount = amount;
+        }
+        if (amount > maxAmount) {
+          maxAmount = amount;
+        }
+      }
 
-  final maxY = (maxAmount ~/ 100 + 1) * 100;
-  final minY = (minAmount ~/ 100 - 1) * 100;
+      double targetAmount = 1000; // Set your target amount here
+      double balance = widget.balance ?? 0.0;
 
-  return BarChart(
-    BarChartData(
-      alignment: BarChartAlignment.spaceEvenly,
-      maxY: maxY.toDouble(),
-      minY: minY.toDouble(),
-      barGroups: List.generate(12, (index) {
-        final month = index + 1;
-        final amount = amountsPerMonth[month] ?? 0.0;
-        return BarChartGroupData(
-          x: month,
-          barRods: [
-            BarChartRodData(
-              y: amount,
-              colors: [Colors.orange],
+      double minY;
+      double maxY;
+      double interval;
+
+      if (balance == 0) {
+        minY = 0;
+        maxY = targetAmount;
+      } else if (balance > 0) {
+        minY = 0;
+        maxY = balance;
+      } else {
+        minY = balance;
+        maxY = targetAmount;
+      }
+
+      double range = maxY - minY;
+      interval = range / 10;
+
+      return BarChart(
+        BarChartData(
+          alignment: BarChartAlignment.spaceEvenly,
+          maxY: maxY.toDouble(),
+          minY: minY.toDouble(),
+          barGroups: List.generate(12, (index) {
+            final month = index + 1;
+            final amount = amountsPerMonth[month] ?? 0.0;
+            return BarChartGroupData(
+              x: month,
+              barRods: [
+                BarChartRodData(
+                  y: amount,
+                  colors: [Colors.orange],
+                ),
+              ],
+            );
+          }),
+          titlesData: FlTitlesData(
+            show: true,
+            bottomTitles: SideTitles(
+              showTitles: true,
+              getTextStyles: (value) => TextStyle(color: Colors.black),
+              margin: 8,
+              getTitles: (double value) {
+                final monthIndex = value.toInt();
+                if (monthIndex > 0 && monthIndex <= 12) {
+                  return monthNames[monthIndex];
+                }
+                return '';
+              },
             ),
-          ],
-        );
-      }),
-      titlesData: FlTitlesData(
-        show: true,
-        bottomTitles: SideTitles(
-          showTitles: true,
-          getTextStyles: (value) => TextStyle(color: Colors.black),
-          margin: 8,
-          getTitles: (double value) {
-            final monthIndex = value.toInt();
-            if (monthIndex > 0 && monthIndex <= 12) {
-              return monthNames[monthIndex];
-            }
-            return '';
-          },
+            leftTitles: SideTitles(
+              showTitles: true,
+              getTextStyles: (value) => TextStyle(color: Colors.black),
+              margin: 8,
+              reservedSize: 40,
+              interval: interval,
+              getTitles: (double value) {
+                return value.toInt().toString();
+              },
+            ),
+          ),
+          borderData: FlBorderData(
+            show: true,
+            border: Border.all(color: Colors.grey),
+          ),
         ),
-        leftTitles: SideTitles(
-          showTitles: true,
-          getTextStyles: (value) => TextStyle(color: Colors.black),
-          margin: 8,
-          reservedSize: 40,
-          interval: 100,
-          getTitles: (double value) {
-            if (value % 100 == 0) {
-              return value.toInt().toString();
-            }
-            return '';
-          },
-        ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: Colors.grey),
-      ),
-    ),
-  );
+      );
+    }
+  }
 }
